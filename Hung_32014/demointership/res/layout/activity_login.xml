@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF" >
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="21dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_logo_splash" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageView1"
+        android:layout_marginTop="24dp"
+        android:layout_toLeftOf="@+id/imageView1"
+        android:text="@string/login_tv_label" />
+
+    <ImageButton
+        android:id="@+id/login_ib_facebook"
+        style="@drawable/action_item_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_marginTop="21dp"
+        android:layout_toLeftOf="@+id/imageView1"
+        android:src="@drawable/ic_facebook"
+        android:onClick="onClicks" />
+
+    <ImageButton
+        android:id="@+id/login_ib_twitter"
+        style="@drawable/action_item_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/login_ib_facebook"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_twitter"
+        android:onClick="onClicks" />
+
+    <ImageButton
+        android:id="@+id/login_ib_google"
+        style="@drawable/action_item_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/login_ib_twitter"
+        android:layout_toRightOf="@+id/imageView1"
+        android:src="@drawable/ic_google" 
+        android:onClick="onClicks"/>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/login_ib_facebook"
+        android:layout_marginTop="39dp"
+        android:text="@string/login_tv_username" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView2"
+        android:layout_marginTop="20dp"
+        android:text="@string/login_tv_password" />
+
+    <EditText
+        android:id="@+id/login_et_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textView2"
+        android:layout_alignBottom="@+id/textView2"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@+id/textView2"
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/login_et_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textView3"
+        android:layout_alignBottom="@+id/textView3"
+        android:layout_alignLeft="@+id/login_et_username"
+        android:layout_alignRight="@+id/login_et_username"
+        android:ems="10" />
+
+    <Button
+        android:id="@+id/login_bt_createaccount"
+        style="@drawable/action_item_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/login_bt_CreateNewAccount" 
+        android:onClick="onClicks"/>
+
+    <Button
+        android:id="@+id/login_bt_forgotpassword"
+        style="@drawable/action_item_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/login_et_password"
+        android:layout_below="@id/login_et_password"
+        android:layout_marginTop="15dp"
+        android:text="@string/login_bt_forgotPassword"
+        android:onClick="onClicks" />
+
+    <Button
+        android:id="@+id/login_bt_submit"
+        style="@drawable/action_item_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/login_et_password"
+        android:layout_marginTop="14dp"
+        android:layout_toLeftOf="@+id/login_ib_twitter"
+        android:text="@string/login_bt_submit"
+        android:onClick="onClicks" />
+
+</RelativeLayout>
