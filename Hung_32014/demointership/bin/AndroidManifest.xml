@@ -27,13 +27,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.demointership.activity.ForgotPasswordActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.FORGOTPASSWORD" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
         <activity android:name="com.example.demointership.activity.RegisterActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.REGISTER" />

@@ -9,4 +9,8 @@
 	<string name="login_bt_submit">Submit</string>
 	<string name="login_bt_forgotPassword">Forgot Password</string>
 	<string name="login_bt_CreateNewAccount">Create A New Account</string>
+	<string name="forgot_tv_title">Forgot MyMenu Password</string>
+	<string name="forgot_et_email_hint">Enter Email</string>
+	<string name="forgot_bt_submit">Submit</string>
+	<string name="forgot_bt_cancel">Cancel</string>
 </resources>
