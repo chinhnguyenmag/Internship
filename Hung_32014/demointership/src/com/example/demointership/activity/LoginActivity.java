@@ -292,6 +292,7 @@ public class LoginActivity extends Activity {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onBackPressed() {
 

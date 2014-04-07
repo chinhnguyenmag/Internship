@@ -3,6 +3,7 @@ package com.example.demointership.activity;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +13,10 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.demointership.R;
+import com.example.demointership.Util.Server;
+import com.example.demointership.Util.ServerURL;
+import com.example.demointership.model.ResponseRegister;
+import com.google.gson.Gson;
 
 public class RegisterActivity extends Activity {
 	EditText mEtFirstName, mEtLastName, mEtZipcode, mEtEmail, mEtUsername,
@@ -36,6 +41,7 @@ public class RegisterActivity extends Activity {
 
 	}
 
+	@SuppressLint("ShowToast")
 	public void onClicks(View v) {
 		switch (v.getId()) {
 		case R.id.register_bt_submit:
@@ -61,13 +67,25 @@ public class RegisterActivity extends Activity {
 					StringEntity stringEntity = null;
 					JSONObject obj = new JSONObject();
 					try {
-						obj.put("username",username);
-						obj.put("email",email);
-						obj.put("password",password);
-						obj.put("firstname",firstname);
-						obj.put("lastname",lastname);
-						obj.put("zipcode",zipcode);
+						obj.put("username", username);
+						obj.put("email", email);
+						obj.put("password", password);
+						obj.put("firstname", firstname);
+						obj.put("lastname", lastname);
+						obj.put("zipcode", zipcode);
+						stringEntity = new StringEntity(obj.toString(), "UTF-8");
 					} catch (Exception e) {
+
+					}
+
+					ResponseRegister responseReg = new Gson().fromJson(
+							Server.getJSON(Server.requestPost(ServerURL.URL
+									+ ServerURL.getKeySignUp(), stringEntity)),
+							ResponseRegister.class);
+
+					if (responseReg.status.equals("success")) {
+
+					} else {
 
 					}
 
