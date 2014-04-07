@@ -29,25 +29,10 @@
             </intent-filter>
         </activity>
         <activity android:name="com.example.demointership.activity.LoginActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.LOGIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
         <activity android:name="com.example.demointership.activity.RegisterActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.REGISTER" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
         <activity android:name="com.example.demointership.activity.SuccessActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.SUCCESS" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
     </application>
 

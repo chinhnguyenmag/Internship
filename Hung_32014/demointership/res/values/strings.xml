@@ -13,4 +13,17 @@
 	<string name="forgot_et_email_hint">Enter Email</string>
 	<string name="forgot_bt_submit">Submit</string>
 	<string name="forgot_bt_cancel">Cancel</string>
+	<string name="register_bt_submit">Submit</string>
+	<string name="register_et_firstname_hint">First Name*</string>
+	<string name="register_et_lastname_hint">Last Name*</string>
+	<string name="register_et_zipcpde_hint">Zipcode</string>
+	<string name="register_et_email_hint">Email Addreess*</string>
+	<string name="register_et_username_hint">Username*</string>
+	<string name="register_et_password_hint">Password*</string>
+	<string name="register_et_confirmpassword_hint">Confirm Password*</string>
+	<string name="sociallogin_tv_username">Create a unique Username</string>
+	<string name="sociallogin_tv_zipcode">Enter Your Zip Code</string>
+	<string name="sociallogin_bt_submit">Submit</string>
+	<string name="status">status</string>
+	
 </resources>
