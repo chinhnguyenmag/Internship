@@ -1,7 +1,6 @@
 package com.example.demointership.activity;
 
-import org.apache.http.entity.StringEntity;
-import org.json.JSONObject;
+import java.util.concurrent.ExecutionException;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -13,10 +12,8 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.demointership.R;
-import com.example.demointership.Util.Server;
-import com.example.demointership.Util.ServerURL;
-import com.example.demointership.model.ResponseRegister;
-import com.google.gson.Gson;
+import com.example.demointership.asyntask.asynctaskregister;
+import com.example.demointership.model.UserDetail;
 
 public class RegisterActivity extends Activity {
 	EditText mEtFirstName, mEtLastName, mEtZipcode, mEtEmail, mEtUsername,
@@ -52,6 +49,7 @@ public class RegisterActivity extends Activity {
 			String username = mEtUsername.getText().toString();
 			String password = mEtPassword.getText().toString();
 			String confirmpassword = mEtConfirmPassword.getText().toString();
+
 			if (firstname.length() == 0 || lastname.length() == 0
 					|| zipcode.length() == 0 || email.length() == 0
 					|| username.length() == 0 || password.length() == 0
@@ -64,31 +62,28 @@ public class RegisterActivity extends Activity {
 							"Password and Confirm Password are not correct !",
 							Toast.LENGTH_LONG);
 				} else {
-					StringEntity stringEntity = null;
-					JSONObject obj = new JSONObject();
+					asynctaskregister async = new asynctaskregister(
+							RegisterActivity.this);
+					async.execute();
+
+					UserDetail responseReg = null;
 					try {
-						obj.put("username", username);
-						obj.put("email", email);
-						obj.put("password", password);
-						obj.put("firstname", firstname);
-						obj.put("lastname", lastname);
-						obj.put("zipcode", zipcode);
-						stringEntity = new StringEntity(obj.toString(), "UTF-8");
-					} catch (Exception e) {
+						responseReg = async.get();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ExecutionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					if (responseReg != null) {
+						if (responseReg.status.equals("success")) {
+
+						} else {
+
+						}
 
 					}
-
-					ResponseRegister responseReg = new Gson().fromJson(
-							Server.getJSON(Server.requestPost(ServerURL.URL
-									+ ServerURL.getKeySignUp(), stringEntity)),
-							ResponseRegister.class);
-
-					if (responseReg.status.equals("success")) {
-
-					} else {
-
-					}
-
 				}
 
 			}

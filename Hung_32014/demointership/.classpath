@@ -6,6 +6,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry exported="true" kind="lib" path="C:/Users/Hung/Desktop/download FF/google-gson-2.2.4/gson-2.2.4.jar"/>
-	<classpathentry kind="lib" path="E:/project/github/Internship/Hung_32014/twitter4j-3.0.5/lib/twitter4j-core-3.0.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="E:/project/github/Internship/Hung_32014/twitter4j-3.0.5/lib/twitter4j-core-3.0.5.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

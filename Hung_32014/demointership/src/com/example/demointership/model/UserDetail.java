@@ -37,5 +37,5 @@ public class UserDetail {
 	public String defaultsearchprofile;
 	@SerializedName("error")
 	public String error;
-
+	
 }

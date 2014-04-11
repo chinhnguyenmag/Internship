@@ -3,8 +3,8 @@ package com.example.demointership.activity;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.util.concurrent.ExecutionException;
 
-import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,9 +29,8 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.demointership.R;
-import com.example.demointership.Util.Server;
-import com.example.demointership.Util.ServerURL;
 import com.example.demointership.Util.Utils;
+import com.example.demointership.asyntask.asynctasklogin;
 import com.example.demointership.model.UserDetail;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
@@ -39,9 +38,7 @@ import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 import com.facebook.android.Util;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.PlusClient;
-import com.google.gson.Gson;
 
 public class LoginActivity extends Activity {
 	Button mBtSubmit, mBtCreateAccount, mBtForgotPassword;
@@ -52,8 +49,8 @@ public class LoginActivity extends Activity {
 	Facebook mFacebook;
 	private PlusClient mPlusClient;
 	private ConnectionResult mConnectionResult;
-	private GoogleApiClient mGoogleApiClient;
-	private boolean mIntentInProgress;
+	// private GoogleApiClient mGoogleApiClient;
+	// private boolean mIntentInProgress;
 	final int RC_SIGN_IN = 0;
 	Twitter mTwitter;
 	private static final String CONSUMER_KEY = "sdOjEI2cOxzTLHMCCMmuQ";
@@ -90,12 +87,7 @@ public class LoginActivity extends Activity {
 	public void onClicks(View v) {
 		switch (v.getId()) {
 		case R.id.login_bt_submit: /* Button Submit */
-			try {
-				loginNomal();
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			loginNomal();
 
 			break;
 		case R.id.login_bt_createaccount: /* Button Create A New Account */
@@ -119,42 +111,36 @@ public class LoginActivity extends Activity {
 		}
 	}
 
-	private void loginNomal() throws UnsupportedEncodingException {
-		// TODO Auto-generated method stub
+	private void loginNomal() {
 		String username = mEtUsername.getText().toString();
 		String password = mEtPassword.getText().toString();
-		JSONObject jObject = new JSONObject();
-		StringEntity stringEntity = null;
-		if (Utils.isValidEmail(getApplicationContext(), username)) {
+		if (username.length() != 0 && password.length() != 0) {
+			asynctasklogin async = new asynctasklogin(LoginActivity.this);
+			if (Utils.isValidEmail(getApplicationContext(), username)) {
+				async.execute(username, null, password);
+			} else {
+				async.execute(null, username, password);
+			}
+			UserDetail userdetail = null;
 			try {
-				jObject.put("email", username);
-				jObject.put("password", password);
-				stringEntity = new StringEntity(jObject.toString(), "UTF-8");
-			} catch (JSONException e) {
+				userdetail = async.get();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else {
-			try {
-				jObject.put("username", username);
-				jObject.put("password", password);
-				stringEntity = new StringEntity(jObject.toString(), "UTF-8");
-			} catch (JSONException e) {
-				e.printStackTrace();
+			if (userdetail.status.equals("success")) {
+				startActivity(new Intent(LoginActivity.this,
+						SuccessActivity.class));
+			} else {
+				Toast.makeText(getApplicationContext(), userdetail.error,
+						Toast.LENGTH_SHORT).show();
 			}
-		}
-
-		// StringEntity stringEntity = new StringEntity(jObject.toString(),
-		// "UTF8");
-
-		UserDetail userdetail = new Gson().fromJson(Server.getJSON(Server
-				.requestPost(ServerURL.URL + ServerURL.getKeyLoginNormal(),
-						stringEntity)), UserDetail.class);
-		if (userdetail.status.equals("success")) {
-			startActivity(new Intent(LoginActivity.this, SuccessActivity.class));
-		} else {
-			Toast.makeText(getApplicationContext(), userdetail.error,
+		} else
+			Toast.makeText(getApplicationContext(), "Insert data",
 					Toast.LENGTH_SHORT).show();
-		}
 	}
 
 	private void loginGoogle() {
@@ -169,21 +155,25 @@ public class LoginActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		mPlusClient.connect();
+		// mPlusClient.connect();
 	}
 
 	@Override
 	protected void onStop() {
-		mPlusClient.disconnect();
+		// mPlusClient.disconnect();
 		super.onStop();
 	}
 
 	private void loginTwitter() {
+		//ConfigurationBuilder confi = new ConfigurationBuilder();
+		//confi.setOAuthConsumerKey(CONSUMER_KEY).setOAuthConsumerSecret(
+		//		CONSUMER_SECRET);
+		//Configuration configuration = confi.build();
+		//mTwitter = new TwitterFactory(configuration).getInstance();
 		try {
 			mTwitter.getOAuth2Token();
 			isTwitter = true;
 		} catch (TwitterException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -202,19 +192,15 @@ public class LoginActivity extends Activity {
 
 			@Override
 			public void onFacebookError(FacebookError e) {
-				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void onError(DialogError e) {
-				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public void onComplete(Bundle values) {
-				// TODO Auto-generated method stub
 				SharedPreferences fbSp = getSharedPreferences(
 						"facebookUserDetail", 0);
 				try {
@@ -238,16 +224,12 @@ public class LoginActivity extends Activity {
 					edit.putString("lastname", lastname);
 					edit.commit();
 				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (FacebookError e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (JSONException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				isFacebook = true;
@@ -255,7 +237,6 @@ public class LoginActivity extends Activity {
 
 			@Override
 			public void onCancel() {
-				// TODO Auto-generated method stub
 
 			}
 		});
@@ -275,7 +256,6 @@ public class LoginActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				String email = emailEtDialog.getText().toString();
 				Log.e("email", email);
 			}
@@ -284,7 +264,6 @@ public class LoginActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				dialog.dismiss();
 			}
 		});
@@ -301,10 +280,8 @@ public class LoginActivity extends Activity {
 				try {
 					mFacebook.logout(getApplicationContext());
 				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			if (isTwitter) {
@@ -331,7 +308,6 @@ public class LoginActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				String username = EtUsername.getText().toString();
 				String zipcode = EtZipcode.getText().toString();
 				// Thuc hien voi server
