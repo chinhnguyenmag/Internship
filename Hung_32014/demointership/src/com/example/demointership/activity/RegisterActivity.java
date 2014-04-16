@@ -1,10 +1,18 @@
 package com.example.demointership.activity;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -64,7 +72,8 @@ public class RegisterActivity extends Activity {
 				} else {
 					asynctaskregister async = new asynctaskregister(
 							RegisterActivity.this);
-					async.execute();
+					async.execute(username, email, password, firstname,
+							lastname, zipcode);
 
 					UserDetail responseReg = null;
 					try {
@@ -77,10 +86,17 @@ public class RegisterActivity extends Activity {
 						e.printStackTrace();
 					}
 					if (responseReg != null) {
-						if (responseReg.status.equals("success")) {
-
+						if (responseReg.getStatus().equals("success")) {
+							Toast.makeText(getApplicationContext(),
+									R.string.register_ok_message,
+									Toast.LENGTH_SHORT).show();
+							finish();
 						} else {
-
+							Toast.makeText(
+									getApplicationContext(),
+									responseReg.getUsername()
+											+ responseReg.getEmail(),
+									Toast.LENGTH_SHORT).show();
 						}
 
 					}
@@ -88,7 +104,89 @@ public class RegisterActivity extends Activity {
 
 			}
 			break;
+		case R.id.register_ib_avatar: // image Button avatar
+
+			setAvatar();
+			break;
 		}
 	}
 
+	private void setAvatar() {
+		final Dialog dialog = new Dialog(RegisterActivity.this);
+		dialog.setContentView(R.layout.dialog_getavatar);
+		Button btCancel = (Button) dialog.findViewById(R.id.avatar_cancel);
+		Button btChoose = (Button) dialog.findViewById(R.id.avatar_chooseimage);
+		Button btTake = (Button) dialog.findViewById(R.id.avatar_takecamera);
+		btCancel.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				dialog.dismiss();
+			}
+		});
+		btChoose.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				ChooseOnLibrary();
+				dialog.dismiss();
+			}
+
+		});
+		btTake.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				TakeAPhoto();
+				dialog.dismiss();
+			}
+
+		});
+		dialog.show();
+	}
+
+	private void TakeAPhoto() {
+		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		startActivityForResult(intent, 1);
+	}
+
+	private void ChooseOnLibrary() {
+		Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+		photoPickerIntent.setType("image/*");
+		startActivityForResult(photoPickerIntent, 2);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 1) {
+			if (resultCode == RESULT_OK) {
+				// Image captured and saved to fileUri specified in the Intent
+				Toast.makeText(this, "Image saved to:\n" + data.getData(),
+						Toast.LENGTH_LONG).show();
+
+				Bundle extras = data.getExtras();
+				Bitmap imageBitmap = (Bitmap) extras.get("data");
+				mIbAvatar.setImageBitmap(imageBitmap);
+			} else if (resultCode == RESULT_CANCELED) {
+				// User cancelled the image capture
+			} else {
+				// Image capture failed, advise user
+			}
+			if (requestCode == 2) {
+				Uri selectedImage = data.getData();
+				InputStream imageStream = null;
+				try {
+					imageStream = getContentResolver().openInputStream(
+							selectedImage);
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Bitmap yourSelectedImage = BitmapFactory
+						.decodeStream(imageStream);
+				mIbAvatar.setImageBitmap(yourSelectedImage);
+			}
+		}
+
+	}
 }

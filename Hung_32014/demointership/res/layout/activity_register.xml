@@ -21,7 +21,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignTop="@+id/imageView1"
         android:layout_marginLeft="30dp"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/ic_launcher" 
+        android:onClick="onClicks"/>
 
     <EditText
         android:id="@+id/register_et_firstname"

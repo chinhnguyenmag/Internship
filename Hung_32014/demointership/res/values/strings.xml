@@ -25,5 +25,9 @@
 	<string name="sociallogin_tv_zipcode">Enter Your Zip Code</string>
 	<string name="sociallogin_bt_submit">Submit</string>
 	<string name="status">status</string>
+	<string name="register_ok_message">Successfull !</string>
+	<string name="avatar_takeaphoto">Take A New Photo</string>
+	<string name="avatar_chooseimage">Choose From Library</string>
+	<string name="avatar_cancel">Cancel</string>
 	
 </resources>

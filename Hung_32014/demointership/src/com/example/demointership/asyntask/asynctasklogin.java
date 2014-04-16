@@ -32,10 +32,10 @@ public class asynctasklogin extends AsyncTask<String, Void, UserDetail> {
 
 		super.onPreExecute();
 
-		mDialog = ProgressDialog.show(mContext, " ", "Loading...");
-		//mDialog = new ProgressDialog(mContext);
-		//mDialog.setMessage("Loading...");
-		//mDialog.show();
+		//mDialog = ProgressDialog.show(mContext, " ", "Loading...");
+		mDialog = new ProgressDialog(mContext);
+		mDialog.setMessage("Loading...");
+		mDialog.show();
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class asynctasklogin extends AsyncTask<String, Void, UserDetail> {
 		StringEntity stringEntity = null;
 		if (email != null) {
 			try {
-				jObject.put("email", username);
+				jObject.put("email", email);
 				jObject.put("password", password);
 				stringEntity = new StringEntity(jObject.toString(), "UTF-8");
 			} catch (JSONException e) {
@@ -81,7 +81,7 @@ public class asynctasklogin extends AsyncTask<String, Void, UserDetail> {
 							stringEntity)), UserDetail.class);
 			return userdetail;
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
 		return null;
 	}

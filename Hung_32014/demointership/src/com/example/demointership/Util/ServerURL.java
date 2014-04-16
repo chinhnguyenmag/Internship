@@ -1,10 +1,10 @@
 package com.example.demointership.Util;
 
 public class ServerURL {
-		public static String URL = "http://dev.magrabbit.com:8998";
+//		public static String URL = "http://dev.magrabbit.com:8998";
 		// public static String URL = "http://54.245.230.7:9000";
 		// public static String URL = "http://50.23.223.154:3000";
-		//public static String URL = "http://50.23.223.155:3000";
+		public static String URL = "http://50.23.223.155:3000";
 
 		private static final String KEY_LOGIN_NORMAL = "/users/login.json";
 		private static final String KEY_LOGIN_SOCIAL = "/users/check_token.json";
