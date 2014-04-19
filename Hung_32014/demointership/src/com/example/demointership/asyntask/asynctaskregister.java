@@ -28,9 +28,10 @@ public class asynctaskregister extends AsyncTask<String, Void, UserDetail> {
 			obj.put("username", params[0]);
 			obj.put("email", params[1]);
 			obj.put("password", params[2]);
-			obj.put("firstname", params[3]);
-			obj.put("lastname", params[4]);
-			obj.put("zipcode", params[5]);
+			obj.put("firs_tname", params[3]);
+			obj.put("last_name", params[4]);
+			obj.put("zip", params[5]);
+			obj.put("address", "");
 			stringEntity = new StringEntity(obj.toString(), "UTF-8");
 		} catch (Exception e) {
 

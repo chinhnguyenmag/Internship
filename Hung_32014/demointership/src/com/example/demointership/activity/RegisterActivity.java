@@ -1,7 +1,7 @@
 package com.example.demointership.activity;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.concurrent.ExecutionException;
 
 import android.annotation.SuppressLint;
@@ -9,9 +9,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
@@ -90,6 +89,7 @@ public class RegisterActivity extends Activity {
 							Toast.makeText(getApplicationContext(),
 									R.string.register_ok_message,
 									Toast.LENGTH_SHORT).show();
+							setResult(RESULT_OK);
 							finish();
 						} else {
 							Toast.makeText(
@@ -161,32 +161,43 @@ public class RegisterActivity extends Activity {
 		if (requestCode == 1) {
 			if (resultCode == RESULT_OK) {
 				// Image captured and saved to fileUri specified in the Intent
-				Toast.makeText(this, "Image saved to:\n" + data.getData(),
-						Toast.LENGTH_LONG).show();
+				// Toast.makeText(this, "Image saved to:\n" + data.getData(),
+				// Toast.LENGTH_LONG).show();
 
 				Bundle extras = data.getExtras();
 				Bitmap imageBitmap = (Bitmap) extras.get("data");
 				mIbAvatar.setImageBitmap(imageBitmap);
-			} else if (resultCode == RESULT_CANCELED) {
-				// User cancelled the image capture
-			} else {
-				// Image capture failed, advise user
-			}
-			if (requestCode == 2) {
-				Uri selectedImage = data.getData();
-				InputStream imageStream = null;
+
+				String root = Environment.getExternalStorageDirectory()
+						.toString();
+				File myDir = new File(root + "/mymenu/avatar");
+				myDir.mkdirs();
+				String fname = "avatar.jpg";
+				Toast.makeText(this,
+						"Image saved to:\n" + myDir.toString() + fname,
+						Toast.LENGTH_SHORT).show();
+				File file = new File(myDir, fname);
+				if (file.exists())
+					file.delete();
 				try {
-					imageStream = getContentResolver().openInputStream(
-							selectedImage);
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
+					FileOutputStream out = new FileOutputStream(file);
+					imageBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+					out.flush();
+					out.close();
+
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				Bitmap yourSelectedImage = BitmapFactory
-						.decodeStream(imageStream);
-				mIbAvatar.setImageBitmap(yourSelectedImage);
+
+			} else if (resultCode == RESULT_CANCELED) {
+			} else {
 			}
 		}
-
+		if (requestCode == 2) {
+			Bundle extras = data.getExtras();
+			Bitmap imageBitmap = (Bitmap) extras.get("data");
+			mIbAvatar.setImageBitmap(imageBitmap);
+		}
 	}
+
 }

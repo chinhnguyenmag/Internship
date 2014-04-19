@@ -2,8 +2,7 @@ package com.example.demointership.activity;
 
 
 
-import com.example.demointership.R;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,11 +12,13 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.example.demointership.R;
+
 public class TwitterLoginActivity extends Activity {
 
 	public static final String CONSUMER_KEY = "sdOjEI2cOxzTLHMCCMmuQ";
 	public static final String CONSUMER_SECRET = "biI3oxIBX2QMzUIVaW1wVAXygbynuS80pqSliSDTc";
-	public static final String CALLBACK_URL = "myapp://mainactivity";
+	public static final String CALLBACK_URL = "myapp://LoginActivity";
 
 	public static final String IEXTRA_AUTH_URL = "auth_url";
 	public static final String IEXTRA_OAUTH_VERIFIER = "oauth_verifier";
@@ -27,6 +28,7 @@ public class TwitterLoginActivity extends Activity {
 	public static final String PREF_KEY_ACCESS_TOKEN = "access_token";
 	public static final String PREF_KEY_ACCESS_TOKEN_SECRET = "access_token_secret";
 
+	@SuppressLint("SetJavaScriptEnabled")
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_logintwitter);

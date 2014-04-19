@@ -30,7 +30,7 @@ public class asynctasksocialregister extends
 
 	@Override
 	protected void onPreExecute() {
-		mDialog = ProgressDialog.show(mContext, "", "Loading...");
+		mDialog = ProgressDialog.show(mContext, "", "...");
 		super.onPreExecute();
 	}
 
@@ -45,8 +45,13 @@ public class asynctasksocialregister extends
 		StringEntity stringEntity = null;
 		JSONObject obj = new JSONObject();
 		try {
-			obj.put("username", params[0]);
-			obj.put("zipcode", params[1]);
+			obj.put("uid", params[0]);
+			obj.put("provider", params[1]);
+			obj.put("email", params[2]);
+			obj.put("username", params[3]);
+			obj.put("password", params[4]);
+			obj.put("first_name", params[5]);
+			obj.put("last_name", params[6]);
 
 			stringEntity = new StringEntity(obj.toString(), "UTF-8");
 		} catch (Exception e) {

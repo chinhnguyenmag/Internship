@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -17,6 +20,8 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -28,36 +33,44 @@ import android.widget.Toast;
 import com.example.demointership.R;
 import com.example.demointership.Util.Utils;
 import com.example.demointership.asyntask.asynctasklogin;
+import com.example.demointership.asyntask.asynctasksociallogin;
 import com.example.demointership.asyntask.asynctasksocialregister;
 import com.example.demointership.model.UserDetail;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
+import com.facebook.android.Util;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.plus.PlusClient;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends Activity implements ConnectionCallbacks,
+		OnConnectionFailedListener {
 	Button mBtSubmit, mBtCreateAccount, mBtForgotPassword;
 	ImageButton mIbFacebook, mIbTwitter, mIbGoogle;
 	EditText mEtUsername, mEtPassword;
 	public int REGISTER = 1, FORGOT = 2, FACEBOOK = 3, TWITTER = 4, GOOGLE = 5;
 	private static final String APP_ID = "422350967898025";
 	Facebook mFacebook;
-	private PlusClient mPlusClient;
 	private ConnectionResult mConnectionResult;
-	// private GoogleApiClient mGoogleApiClient;
+	private GoogleApiClient mGoogleApiClient;
 	// private boolean mIntentInProgress;
-	final int RC_SIGN_IN = 0;
 
 	private static final String CONSUMER_KEY = "sdOjEI2cOxzTLHMCCMmuQ";
 	private static final String CONSUMER_SECRET = "biI3oxIBX2QMzUIVaW1wVAXygbynuS80pqSliSDTc";
-	private static final String CALLBACK_URL = "myapp://mainactivity";
+	private static final String CALLBACK_URL = "myapp://LoginActivity";
 
 	private static final String IEXTRA_AUTH_URL = "auth_url";
 	private static final String IEXTRA_OAUTH_VERIFIER = "oauth_verifier";
 	private static final String IEXTRA_OAUTH_TOKEN = "oauth_token";
-
+	public static final String PROVIDER_FACEBOOK = "facebook";
+	public static final String PROVIDER_TWITTER = "twitter";
+	public static final String PROVIDER_GOOGLE = "google_oauth2";
 	private static final String TWITTER_LOG = "twitterLog";
 	private static final String PREF_KEY_ACCESS_TOKEN = "access_token";
 	private static final String PREF_KEY_ACCESS_TOKEN_SECRET = "access_token_secret";
@@ -66,6 +79,7 @@ public class LoginActivity extends Activity {
 	Dialog mDialogSocial;
 	boolean mIsDialogshowing = false;
 	boolean mIsGooglePlus = false, mIsFacebook = false, mIsTwitter = false;
+	SharedPreferences mSpLogin;
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -90,7 +104,7 @@ public class LoginActivity extends Activity {
 				CONSUMER_SECRET);
 		Configuration configuration = confi.build();
 		mTwitter = new TwitterFactory(configuration).getInstance();
-
+		mSpLogin = getSharedPreferences("CurrentUser", 0);
 	}
 
 	public void onClicks(View v) {
@@ -155,24 +169,40 @@ public class LoginActivity extends Activity {
 	}
 
 	private void loginGoogle() {
-		try {
-			mConnectionResult.startResolutionForResult(this, GOOGLE);
-			mIsGooglePlus = true;
-		} catch (SendIntentException e) {
-			mPlusClient.connect();
+		mIsGooglePlus = true;
+		mGoogleApiClient = new GoogleApiClient.Builder(this)
+				.addConnectionCallbacks(this)
+				.addOnConnectionFailedListener(this).addApi(Plus.API, null)
+				.addScope(Plus.SCOPE_PLUS_LOGIN).build();
+		if (!mGoogleApiClient.isConnecting()) {
+			resolveSignInError();
+		}
+
+	}
+
+	private void resolveSignInError() {
+		if (mConnectionResult.hasResolution()) {
+			try {
+				mConnectionResult.startResolutionForResult(this, GOOGLE);
+			} catch (SendIntentException e) {
+				mGoogleApiClient.connect();
+			}
 		}
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		// mPlusClient.connect();
+		mGoogleApiClient.connect();
 	}
 
 	@Override
 	protected void onStop() {
-		// mPlusClient.disconnect();
 		super.onStop();
+
+		if (mGoogleApiClient.isConnected()) {
+			mGoogleApiClient.disconnect();
+		}
 	}
 
 	@Override
@@ -182,6 +212,7 @@ public class LoginActivity extends Activity {
 	}
 
 	private void loginTwitter() {
+		mIsTwitter = true;
 		try {
 			ConfigurationBuilder confbuilder = new ConfigurationBuilder();
 			Configuration conf = confbuilder.setOAuthConsumerKey(CONSUMER_KEY)
@@ -190,6 +221,8 @@ public class LoginActivity extends Activity {
 			mTwitter.setOAuthAccessToken(null);
 			try {
 				mRequestToken = mTwitter.getOAuthRequestToken(CALLBACK_URL);
+				// startActivity(new Intent(Intent.ACTION_VIEW,
+				// Uri.parse(mRequestToken.getAuthenticationURL())));
 				Intent intent = new Intent(LoginActivity.this,
 						TwitterLoginActivity.class);
 				intent.putExtra(IEXTRA_AUTH_URL,
@@ -228,7 +261,12 @@ public class LoginActivity extends Activity {
 			Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
 		mFacebook.authorizeCallback(requestCode, resultCode, intent);
-
+		if (requestCode == REGISTER) {
+			if (resultCode == RESULT_OK) {
+				startActivity(new Intent(LoginActivity.this,
+						SuccessActivity.class));
+			}
+		}
 		if (requestCode == TWITTER) {
 			if (resultCode == RESULT_OK) {
 				try {
@@ -250,14 +288,21 @@ public class LoginActivity extends Activity {
 					e.printStackTrace();
 				}
 			} else if (resultCode == RESULT_CANCELED) {
-				Log.w("twitter", "Twitter auth canceled.");
+			}
+		}
+		if (requestCode == GOOGLE) {
+			if (resultCode != RESULT_OK) {
+
+			}
+			if (!mGoogleApiClient.isConnecting()) {
+				mGoogleApiClient.connect();
 			}
 		}
 	}
 
 	@SuppressWarnings("deprecation")
 	private void loginFacebook() {
-
+		mIsFacebook = true;
 		mFacebook.authorize(LoginActivity.this, new DialogListener() {
 
 			@Override
@@ -271,32 +316,67 @@ public class LoginActivity extends Activity {
 
 			@Override
 			public void onComplete(Bundle values) {
-				/*
-				 * SharedPreferences fbSp = getSharedPreferences(
-				 * "facebookUserDetail", 0); try { // TODO ===============
-				 * String json = mFacebook.request("me"); JSONObject obj =
-				 * Util.parseJson(json); String name = obj.getString("name");
-				 * String email = obj.getString("email"); String access_token =
-				 * mFacebook.getAccessToken(); long access_expires =
-				 * mFacebook.getAccessExpires(); String id =
-				 * obj.getString("id"); String firstname =
-				 * obj.getString("firstname"); String lastname =
-				 * obj.getString("lastname");
-				 * 
-				 * Editor edit = fbSp.edit(); edit.putString("access_token",
-				 * access_token); edit.putLong("access_expires",
-				 * access_expires); edit.putString("name", name);
-				 * edit.putString("email", email); edit.putString("id", id);
-				 * edit.putString("firstname", firstname);
-				 * edit.putString("lastname", lastname); edit.commit(); } catch
-				 * (MalformedURLException e) { e.printStackTrace(); } catch
-				 * (IOException e) { e.printStackTrace(); } catch (FacebookError
-				 * e) { e.printStackTrace(); } catch (JSONException e) {
-				 * e.printStackTrace(); }
-				 */
+
+				try {
+					String json = mFacebook.request("me");
+					JSONObject obj = Util.parseJson(json);
+					// String name = obj.getString("name");
+					String email = obj.getString("email");
+					// String access_token = mFacebook.getAccessToken();
+					// long access_expires = mFacebook.getAccessExpires();
+					String id = obj.getString("id");
+					String firstname = obj.getString("firstname");
+					String lastname = obj.getString("lastname");
+					Editor editor = mSpLogin.edit();
+					editor.putString("first_name", firstname);
+					editor.putString("last_name", lastname);
+					editor.putString("uid", id);
+					editor.putString("email", email);
+					editor.commit();
+					asynctasksociallogin async = new asynctasksociallogin(
+							getApplication());
+					async.execute(id, PROVIDER_FACEBOOK, email, "");
+					UserDetail userDetai = null;
+					try {
+						userDetai = async.get();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} catch (ExecutionException e) {
+						e.printStackTrace();
+					}
+
+					if (userDetai.getStatus().equals("success")) {
+						editor = mSpLogin.edit();
+						editor.putString("access_token",
+								userDetai.getAccess_token());
+						editor.putString("userPhotoImageURL",
+								userDetai.getUserPhotoImageURL());
+						editor.putString("username", userDetai.getUsername());
+
+						// editor.putString(arg0, arg1)
+						// some info
+						editor.commit();
+						startActivity(new Intent(LoginActivity.this,
+								SuccessActivity.class));
+						finish();
+
+					} else {
+						mDialogSocial.show();
+					}
+
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (FacebookError e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+
 				Toast.makeText(getApplicationContext(), "Successfull !",
 						Toast.LENGTH_SHORT).show();
-				mIsFacebook = true;
+
 			}
 
 			@Override
@@ -354,7 +434,7 @@ public class LoginActivity extends Activity {
 				mIsTwitter = false;
 			}
 			if (mIsGooglePlus) {
-				mPlusClient.disconnect();
+				// mPlusClient.disconnect();
 				mIsGooglePlus = false;
 			}
 		}
@@ -372,16 +452,35 @@ public class LoginActivity extends Activity {
 				.findViewById(R.id.sociallogin_et_username);
 		final EditText EtZipcode = (EditText) mDialogSocial
 				.findViewById(R.id.sociallogin_et_zipcode);
+
+		// SharedPreferences SpLogin = getSharedPreferences("CurrentUser",
+		// 0);
+
 		submitBtn.setOnClickListener(new View.OnClickListener() {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void onClick(View v) {
 				String username = EtUsername.getText().toString();
 				String zipcode = EtZipcode.getText().toString();
-				// Thuc hien voi server
+				Editor editor = mSpLogin.edit();
+				editor.putString("zip", zipcode);
+				editor.commit();
+
 				asynctasksocialregister async = new asynctasksocialregister(
 						LoginActivity.this);
-				async.execute(username, zipcode);
+				String uid = mSpLogin.getString("uid", null);
+				String first_name = mSpLogin.getString("first_name", null);
+				String last_name = mSpLogin.getString("last_name", null);
+				String email = mSpLogin.getString("email", null);
+				String provider = "";
+				if (mIsFacebook)
+					provider = PROVIDER_FACEBOOK;
+				if (mIsGooglePlus)
+					provider = PROVIDER_GOOGLE;
+				if (mIsTwitter)
+					provider = PROVIDER_TWITTER;
+				async.execute(uid, provider, email, username, "123456",
+						first_name, last_name);
 				UserDetail userDetail = null;
 				try {
 					userDetail = async.get();
@@ -393,16 +492,10 @@ public class LoginActivity extends Activity {
 					e.printStackTrace();
 				}
 				if (userDetail.getStatus().equals("success")) {
-					// success => SusseccActivity
 
 					startActivity(new Intent(LoginActivity.this,
 							SuccessActivity.class));
 				} else {
-
-					// fail => LoginActivity +logout Social
-					Toast.makeText(getApplicationContext(),
-							userDetail.getError(), Toast.LENGTH_SHORT).show();
-
 					if (mIsFacebook)
 						try {
 							mFacebook.logout(getApplicationContext());
@@ -417,12 +510,46 @@ public class LoginActivity extends Activity {
 						mIsTwitter = false;
 					}
 					if (mIsGooglePlus) {
-						mPlusClient.disconnect();
+						// mPlusClient.disconnect();
 						mIsGooglePlus = false;
 					}
 				}
 
 			}
 		});
+	}
+
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		try {
+			if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+				Person currentPerson = Plus.PeopleApi
+						.getCurrentPerson(mGoogleApiClient);
+				String personName = currentPerson.getDisplayName();
+				String personPhotoUrl = currentPerson.getImage().getUrl();
+				String personGooglePlusProfile = currentPerson.getUrl();
+				String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+				Editor editor = mSpLogin.edit();
+				editor.putString("username", personName);
+				editor.putString("email", email);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Override
+	public void onConnectionSuspended(int cause) {
+		mGoogleApiClient.connect();
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult result) {
+		if (!result.hasResolution()) {
+			GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
+					0).show();
+			return;
+		}
 	}
 }
