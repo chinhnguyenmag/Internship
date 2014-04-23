@@ -5,7 +5,7 @@
     android:background="#FFFFFF" >
 
     <ImageView
-        android:id="@+id/imageView1"
+        android:id="@+id/success_im_avatar"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_alignParentTop="true"
@@ -18,9 +18,9 @@
         android:id="@+id/sociallogin_tv_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/imageView1"
+        android:layout_below="@+id/success_im_avatar"
         android:layout_marginTop="24dp"
-        android:layout_toLeftOf="@+id/imageView1"
+        android:layout_toLeftOf="@+id/success_im_avatar"
         android:text="@string/login_tv_label" />
 
     <ImageButton
@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/sociallogin_tv_username"
         android:layout_marginTop="21dp"
-        android:layout_toLeftOf="@+id/imageView1"
+        android:layout_toLeftOf="@+id/success_im_avatar"
         android:src="@drawable/ic_facebook"
         android:onClick="onClicks" />
 
@@ -50,7 +50,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/login_ib_twitter"
-        android:layout_toRightOf="@+id/imageView1"
+        android:layout_toRightOf="@+id/success_im_avatar"
         android:src="@drawable/ic_google" 
         android:onClick="onClicks"/>
 

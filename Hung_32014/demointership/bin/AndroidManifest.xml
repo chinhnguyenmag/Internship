@@ -8,17 +8,13 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="18" />
 
-    <meta-data
-        android:name="com.google.android.gms.version"
-        android:value="@integer/google_play_services_version" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- using camera -->
     <uses-feature android:name="android.hardware.camera" />
-	<!-- write CDcard -->
+    <!-- write CDcard -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -39,6 +35,10 @@
         </activity>
         <activity android:name="com.example.demointership.activity.SuccessActivity" >
         </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

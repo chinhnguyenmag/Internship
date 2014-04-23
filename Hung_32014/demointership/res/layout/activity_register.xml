@@ -4,7 +4,7 @@
     android:layout_height="match_parent" >
 
     <ImageView
-        android:id="@+id/imageView1"
+        android:id="@+id/success_im_avatar"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_alignParentRight="true"
@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/imageView1"
+        android:layout_alignTop="@+id/success_im_avatar"
         android:layout_marginLeft="30dp"
         android:src="@drawable/ic_launcher" 
         android:onClick="onClicks"/>
@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/imageView1"
+        android:layout_below="@+id/success_im_avatar"
         android:layout_marginTop="26dp"
         android:ems="10"
         android:gravity="center"
