@@ -13,20 +13,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.example.demointership.R;
+import com.example.demointership.Util.Constants;
 
 public class TwitterLoginActivity extends Activity {
 
-	public static final String CONSUMER_KEY = "sdOjEI2cOxzTLHMCCMmuQ";
-	public static final String CONSUMER_SECRET = "biI3oxIBX2QMzUIVaW1wVAXygbynuS80pqSliSDTc";
-	public static final String CALLBACK_URL = "myapp://LoginActivity";
-
-	public static final String IEXTRA_AUTH_URL = "auth_url";
-	public static final String IEXTRA_OAUTH_VERIFIER = "oauth_verifier";
-	public static final String IEXTRA_OAUTH_TOKEN = "oauth_token";
-
-	public static final String PREF_NAME = "twitterLog";
-	public static final String PREF_KEY_ACCESS_TOKEN = "access_token";
-	public static final String PREF_KEY_ACCESS_TOKEN_SECRET = "access_token_secret";
+	
 
 	@SuppressLint("SetJavaScriptEnabled")
 	protected void onCreate(Bundle bundle) {
@@ -39,7 +30,7 @@ public class TwitterLoginActivity extends Activity {
 		webView.setWebViewClient(new WebViewClient() {
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				boolean result = true;
-				if (url != null && url.startsWith(CALLBACK_URL)) {
+				if (url != null && url.startsWith(Constants.CALLBACK_URL)) {
 					Uri uri = Uri.parse(url);
 					Log.v("", url);
 					if (uri.getQueryParameter("denied") != null) {
@@ -52,8 +43,8 @@ public class TwitterLoginActivity extends Activity {
 								.getQueryParameter("oauth_verifier");
 
 						Intent intent = getIntent();
-						intent.putExtra(IEXTRA_OAUTH_TOKEN, oauthToken);
-						intent.putExtra(IEXTRA_OAUTH_VERIFIER, oauthVerifier);
+						intent.putExtra(Constants.IEXTRA_OAUTH_TOKEN, oauthToken);
+						intent.putExtra(Constants.IEXTRA_OAUTH_VERIFIER, oauthVerifier);
 						setResult(RESULT_OK, intent);
 						finish();
 					}

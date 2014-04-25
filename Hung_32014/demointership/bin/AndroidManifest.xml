@@ -30,12 +30,18 @@
             </intent-filter>
         </activity>
         <activity android:name="com.example.demointership.activity.LoginActivity" >
+            <intent-filter>
+                <data
+                    android:host="loginactivity"
+                    android:scheme="demo" />
+                </intent-filter>
         </activity>
         <activity android:name="com.example.demointership.activity.RegisterActivity" >
         </activity>
         <activity android:name="com.example.demointership.activity.SuccessActivity" >
         </activity>
-
+		<activity android:name="com.example.demointership.activity.TwitterLoginActivity">
+        </activity>
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

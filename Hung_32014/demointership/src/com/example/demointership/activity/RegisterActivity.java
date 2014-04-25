@@ -8,7 +8,10 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -194,9 +197,40 @@ public class RegisterActivity extends Activity {
 			}
 		}
 		if (requestCode == 2) {
-			Bundle extras = data.getExtras();
-			Bitmap imageBitmap = (Bitmap) extras.get("data");
+			Uri selectedImage = data.getData();
+			String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+			Cursor cursor = getContentResolver().query(selectedImage,
+					filePathColumn, null, null, null);
+			cursor.moveToFirst();
+
+			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+			String filePath = cursor.getString(columnIndex);
+			cursor.close();
+
+			Bitmap imageBitmap = BitmapFactory.decodeFile(filePath);
 			mIbAvatar.setImageBitmap(imageBitmap);
+
+			String root = Environment.getExternalStorageDirectory().toString();
+			File myDir = new File(root + "/mymenu/avatar");
+			myDir.mkdirs();
+			String fname = "avatar.jpg";
+			Toast.makeText(this,
+					"Image saved to:\n" + myDir.toString() + fname,
+					Toast.LENGTH_SHORT).show();
+			File file = new File(myDir, fname);
+			if (file.exists())
+				file.delete();
+			try {
+				FileOutputStream out = new FileOutputStream(file);
+				imageBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+				out.flush();
+				out.close();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 		}
 	}
 
