@@ -17,5 +17,4 @@ public class Constants {
 	public static final String PREF_KEY_ACCESS_TOKEN_SECRET = "access_token_secret";
 	public static int REGISTER = 1, FORGOT = 2, LOGIN_VIA_FACEBOOK = 3, LOGIN_VIA_TWITTER = 4, LOGIN_VIA_GOOGLE = 5;
 	public static final String APP_ID = "422350967898025";
-	public static int ACCOUNT_PICKER =  6 ;
 }

@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF" >
+    android:background="#FFFFFF"
+    >
 
     <ImageView
         android:id="@+id/success_im_avatar"
@@ -31,8 +32,9 @@
         android:layout_below="@+id/sociallogin_tv_username"
         android:layout_marginTop="21dp"
         android:layout_toLeftOf="@+id/success_im_avatar"
-        android:src="@drawable/ic_facebook"
-        android:onClick="onClicks" />
+        android:background="@drawable/button_facebook"
+        android:onClick="onClicks"
+        android:src="@drawable/ic_facebook" />
 
     <ImageButton
         android:id="@+id/login_ib_twitter"
@@ -41,8 +43,9 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/login_ib_facebook"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_twitter"
-        android:onClick="onClicks" />
+        android:background="@drawable/button_twitter"
+        android:onClick="onClicks"
+        android:src="@drawable/ic_twitter" />
 
     <ImageButton
         android:id="@+id/login_ib_google"
@@ -51,8 +54,9 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/login_ib_twitter"
         android:layout_toRightOf="@+id/success_im_avatar"
-        android:src="@drawable/ic_google" 
-        android:onClick="onClicks"/>
+        android:background="@drawable/button_google"
+        android:onClick="onClicks"
+        android:src="@drawable/ic_google" />
 
     <TextView
         android:id="@+id/sociallogin_tv_zipcode"
@@ -80,7 +84,8 @@
         android:layout_alignBottom="@+id/sociallogin_tv_zipcode"
         android:layout_marginLeft="16dp"
         android:layout_toRightOf="@+id/sociallogin_tv_zipcode"
-        android:ems="10" >
+        android:ems="10"
+        android:background="@drawable/edittext_bg_indicator"  >
 
         <requestFocus />
     </EditText>
@@ -93,7 +98,8 @@
         android:layout_alignBottom="@+id/textView3"
         android:layout_alignLeft="@+id/login_et_username"
         android:layout_alignRight="@+id/login_et_username"
-        android:ems="10" />
+        android:ems="10"
+        android:background="@drawable/edittext_bg_indicator" />
 
     <Button
         android:id="@+id/login_bt_createaccount"
@@ -102,8 +108,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="@string/login_bt_CreateNewAccount" 
-        android:onClick="onClicks"/>
+        android:onClick="onClicks"
+        android:text="@string/login_bt_CreateNewAccount"
+        android:background="@drawable/button_submit" />
 
     <Button
         android:id="@+id/login_bt_forgotpassword"
@@ -113,8 +120,9 @@
         android:layout_alignRight="@id/login_et_password"
         android:layout_below="@id/login_et_password"
         android:layout_marginTop="15dp"
-        android:text="@string/login_bt_forgotPassword"
-        android:onClick="onClicks" />
+        android:onClick="onClicks"
+        android:text="@string/login_bt_forgotPassword" 
+        android:background="@drawable/button_submit"  />
 
     <Button
         android:id="@+id/login_bt_submit"
@@ -124,7 +132,8 @@
         android:layout_below="@id/login_et_password"
         android:layout_marginTop="14dp"
         android:layout_toLeftOf="@+id/login_ib_twitter"
+        android:onClick="onClicks"
         android:text="@string/login_bt_submit"
-        android:onClick="onClicks" />
+        android:background="@drawable/button_submit"  />
 
 </RelativeLayout>

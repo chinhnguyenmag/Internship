@@ -48,15 +48,19 @@ import com.facebook.android.FacebookError;
 import com.facebook.android.Util;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.plus.PlusClient;
+import com.google.android.gms.plus.PlusClient.OnAccessRevokedListener;
+import com.google.android.gms.plus.model.people.Person;
 
 @SuppressLint("NewApi")
 public class LoginActivity extends Activity
-// implements
-// ConnectionCallbacks,
-// OnConnectionFailedListener,
-// com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks
-{
+		implements
+		ConnectionCallbacks,
+		OnConnectionFailedListener,
+		com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks {
 	Button mBtSubmit, mBtCreateAccount, mBtForgotPassword;
 	ImageButton mIbFacebook, mIbTwitter, mIbGoogle;
 	EditText mEtUsername, mEtPassword;
@@ -90,11 +94,11 @@ public class LoginActivity extends Activity
 
 		mFacebook = new Facebook(Constants.APP_ID);
 		mSpLogin = getSharedPreferences("CurrentUser", 0);
-		// mPlusClient = new PlusClient.Builder(this, this, this).setActions(
-		// "http://schemas.google.com/AddActivity",
-		// "http://schemas.google.com/BuyActivity")
-		// /* .setScopes("https://www.googleapis.com/auth/userinfo.email") */
-		// .build();
+		mPlusClient = new PlusClient.Builder(this, this, this).setActions(
+				"http://schemas.google.com/AddActivity",
+				"http://schemas.google.com/BuyActivity")
+		/* .setScopes("https://www.googleapis.com/auth/userinfo.email") */
+		.build();
 		ConfigurationBuilder builder = new ConfigurationBuilder();
 		builder.setOAuthConsumerKey(Constants.CONSUMER_KEY);
 		builder.setOAuthConsumerSecret(Constants.CONSUMER_SECRET);
@@ -110,7 +114,6 @@ public class LoginActivity extends Activity
 		}
 		Toast.makeText(getApplicationContext(), "oncreate", Toast.LENGTH_SHORT)
 				.show();
-		// mProgressLoading.setTitle("loading...");
 	}
 
 	public void onClicks(View v) {
@@ -132,8 +135,6 @@ public class LoginActivity extends Activity
 
 			break;
 		case R.id.login_ib_twitter: /* ImageButton Login with Twitter */
-			Toast.makeText(getApplicationContext(), "test", Toast.LENGTH_SHORT)
-					.show();
 			loginTwitter();
 			break;
 		case R.id.login_ib_google: /* ImageButton Login with Google+ */
@@ -166,6 +167,7 @@ public class LoginActivity extends Activity
 
 				startActivity(new Intent(LoginActivity.this,
 						SuccessActivity.class));
+				finish();
 			} else {
 				Toast.makeText(getApplicationContext(), userdetail.getError(),
 						Toast.LENGTH_SHORT).show();
@@ -177,23 +179,45 @@ public class LoginActivity extends Activity
 
 	private void loginGoogle() {
 
-		Intent intent = AccountPicker.newChooseAccountIntent(null, null,
-				new String[] { "com.google" }, false, null, null, null, null);
-		startActivityForResult(intent, Constants.ACCOUNT_PICKER);
-		// mIsGooglePlus = true;
-		// if (!mPlusClient.isConnected() && mConnectionResult.hasResolution())
-		// {
-		// try {
-		// mConnectionResult.startResolutionForResult(LoginActivity.this,
-		// Constants.LOGIN_VIA_GOOGLE);
-		// } catch (Exception e) {
-		// mConnectionResult = null;
-		// mPlusClient.connect();
-		// }
-		// } else if (mPlusClient.isConnected()) {
-		// mPlusClient.disconnect();
-		// }
+		// Intent intent = AccountPicker.newChooseAccountIntent(null, null,
+		// new String[] { "com.google" }, false, null, null, null, null);
+		// startActivityForResult(intent, Constants.ACCOUNT_PICKER);
+		mIsGooglePlus = true;
+		try {
+			if (!mPlusClient.isConnected()/* && mConnectionResult.hasResolution() */) {
+				try {
 
+					mConnectionResult.startResolutionForResult(
+							LoginActivity.this, Constants.LOGIN_VIA_GOOGLE);
+					Toast.makeText(getApplicationContext(),
+							"startResolutionForResult", Toast.LENGTH_SHORT)
+							.show();
+				} catch (Exception e) {
+					mConnectionResult = null;
+
+					mPlusClient.connect();
+					//mPlusClient.clearDefaultAccount();
+					// mPlusClient.revokeAccessAndDisconnect(new
+					// OnAccessRevokedListener() {
+					//
+					// @Override
+					// public void onAccessRevoked(ConnectionResult status) {
+					// Toast.makeText(getApplicationContext(),
+					// "onAccessRevoked", Toast.LENGTH_SHORT).show();
+					// }
+					// });
+				}
+			}
+			// else {
+			// GooglePlayServicesUtil.getErrorDialog(
+			// mConnectionResult.getErrorCode(), this, 0).show();
+			// }
+			// else if (mPlusClient.isConnected()) {
+			// mPlusClient.disconnect();
+			// }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -203,16 +227,9 @@ public class LoginActivity extends Activity
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void onResume() {
-		Toast.makeText(getApplicationContext(), "onResume", Toast.LENGTH_SHORT)
-				.show();
-		String name = mSpLogin.getString("username", null);
-		if (name != null) {
-			startActivity(new Intent(LoginActivity.this, SuccessActivity.class));
-		}
-		// facebook();
+		Toast.makeText(getApplicationContext(), "onResume", Toast.LENGTH_SHORT).show();
 		if (mTwitter != null) {
 			String uid = "";
 			String username = "";
@@ -238,8 +255,6 @@ public class LoginActivity extends Activity
 					editor.putString("userPhotoImageURL",
 							userDetail.getUserPhotoImageURL());
 					editor.commit();
-					startActivity(new Intent(LoginActivity.this,
-							SuccessActivity.class));
 				} else {
 					mDialogSocial.show();
 					mIsDialogshowing = true;
@@ -254,21 +269,23 @@ public class LoginActivity extends Activity
 				e.printStackTrace();
 			}
 		}
-
+		
+		String name = mSpLogin.getString("username", null);
+		if (name != null) {
+			startActivity(new Intent(LoginActivity.this, SuccessActivity.class));
+		}
 		super.onResume();
 	}
 
-	private void facebook() {
-		if (mFacebook.isSessionValid()) {
-
-		}
-
-	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		// mPlusClient.disconnect();
+		if (mPlusClient.isConnected())
+		{	
+			mPlusClient.clearDefaultAccount();
+			mPlusClient.disconnect();
+		}
 		// if (mPlusClient.isConnecting()) {
 		// mPlusClient
 		// .revokeAccessAndDisconnect(new OnAccessRevokedListener() {
@@ -296,18 +313,19 @@ public class LoginActivity extends Activity
 		mIsTwitter = true;
 		try {
 
-			 mTwitter.setOAuthAccessToken(null);
-			 try {
-					mRequestToken = mTwitter.getOAuthRequestToken(Constants.CALLBACK_URL);
-					Intent intent = new Intent(LoginActivity.this,
-							TwitterLoginActivity.class);
-					intent.putExtra(Constants.IEXTRA_AUTH_URL,
-							mRequestToken.getAuthorizationURL());
-					startActivityForResult(intent, Constants.LOGIN_VIA_TWITTER);
+			mTwitter.setOAuthAccessToken(null);
+			try {
+				mRequestToken = mTwitter
+						.getOAuthRequestToken(Constants.CALLBACK_URL);
+				Intent intent = new Intent(LoginActivity.this,
+						TwitterLoginActivity.class);
+				intent.putExtra(Constants.IEXTRA_AUTH_URL,
+						mRequestToken.getAuthorizationURL());
+				startActivityForResult(intent, Constants.LOGIN_VIA_TWITTER);
 
-				} catch (TwitterException e) {
-					e.printStackTrace();
-				}
+			} catch (TwitterException e) {
+				e.printStackTrace();
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -330,79 +348,86 @@ public class LoginActivity extends Activity
 		Toast.makeText(LoginActivity.this, "unauthorized", Toast.LENGTH_SHORT)
 				.show();
 	}
-	private void check_token()  {
+
+	private void check_token() {
 		boolean done = mSpLogin.getBoolean("do", false);
 		if (done) {
 			String uid = mSpLogin.getString("uid", "");
 			String provider = mSpLogin.getString("provider", "");
-			if (provider.equals(Constants.PROVIDER_FACEBOOK)) {
-				asynctasksociallogin async = new asynctasksociallogin(LoginActivity.this);
+			/* if (provider.equals(Constants.PROVIDER_FACEBOOK)) {
+				asynctasksociallogin async = new asynctasksociallogin(
+						LoginActivity.this);
 				UserDetail userDetail = null;
-				async.execute(uid,provider);
+				async.execute(uid, provider);
 				try {
 					userDetail = async.get();
-					if (userDetail.getStatus().equals("success")){
+					if (userDetail.getStatus().equals("success")) {
 						Editor editor = mSpLogin.edit();
 						editor.putString("username", userDetail.getUsername());
 						editor.commit();
-						startActivity(new Intent(LoginActivity.this, SuccessActivity.class));
+						startActivity(new Intent(LoginActivity.this,
+								SuccessActivity.class));
 						finish();
 					} else {
 						mDialogSocial.show();
 					}
-				} catch (Exception e ){
-					
+				} catch (Exception e) {
+
 				}
-			}
+			} */
 			if (provider.equals(Constants.PROVIDER_TWITTER)) {
-				String username = mSpLogin.getString("username","");
-				asynctasksociallogin async = new asynctasksociallogin(LoginActivity.this);
+				String username = mSpLogin.getString("username", "");
+				asynctasksociallogin async = new asynctasksociallogin(
+						LoginActivity.this);
 				UserDetail userDetail = null;
-				async.execute(uid,provider,username);
+				async.execute(uid, provider, username);
 				try {
 					userDetail = async.get();
-					if (userDetail.getStatus().equals("success")){
+					if (userDetail.getStatus().equals("success")) {
 						Editor editor = mSpLogin.edit();
 						editor.putString("username", userDetail.getUsername());
 						editor.commit();
-						startActivity(new Intent(LoginActivity.this, SuccessActivity.class));
+						startActivity(new Intent(LoginActivity.this,
+								SuccessActivity.class));
 						finish();
 					} else {
 						mDialogSocial.show();
 					}
-				} catch (Exception e ){
-					
+				} catch (Exception e) {
+
 				}
 			}
 			if (provider.equals(Constants.PROVIDER_GOOGLE)) {
-				asynctasksociallogin async = new asynctasksociallogin(LoginActivity.this);
+				asynctasksociallogin async = new asynctasksociallogin(
+						LoginActivity.this);
 				UserDetail userDetail = null;
-				async.execute(uid,provider);
+				async.execute(uid, provider);
 				try {
 					userDetail = async.get();
-					if (userDetail.getStatus().equals("success")){
+					if (userDetail.getStatus().equals("success")) {
 						Editor editor = mSpLogin.edit();
 						editor.putString("username", userDetail.getUsername());
 						editor.commit();
-						startActivity(new Intent(LoginActivity.this, SuccessActivity.class));
+						startActivity(new Intent(LoginActivity.this,
+								SuccessActivity.class));
 						finish();
 					} else {
 						mDialogSocial.show();
 					}
-				} catch (Exception e ){
-					
+				} catch (Exception e) {
+
 				}
 			}
 
 		}
 	}
-	@SuppressWarnings("deprecation")
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode,
 			Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-		// mFacebook.authorizeCallback(requestCode, resultCode, intent);
-		// facebook();
+		Toast.makeText(getApplicationContext(), "onActivityResult",
+				Toast.LENGTH_SHORT).show();
 		check_token();
 		if (requestCode == Constants.REGISTER) {
 			if (resultCode == RESULT_OK) {
@@ -434,23 +459,11 @@ public class LoginActivity extends Activity
 			} else if (resultCode == RESULT_CANCELED) {
 			}
 		}
-		if (requestCode == Constants.LOGIN_VIA_GOOGLE) {
-			if (resultCode != RESULT_OK) {
-				Toast.makeText(getApplicationContext(),
-						"onActivityResult isGoogle", Toast.LENGTH_SHORT).show();
-				mConnectionResult = null;
-				mPlusClient.connect();
-			} else {
-				mIsGooglePlus = false;
-			}
-		}
-		if (requestCode == Constants.ACCOUNT_PICKER && resultCode == RESULT_OK) {
-			// AccountManager manager = AccountManager.get(this);
-			String accountName = intent
-					.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-			String uid = intent.getStringExtra(AccountManager.KEY_ACCOUNTS);
-			Toast.makeText(getApplicationContext(), accountName + " " + uid,
-					Toast.LENGTH_SHORT).show();
+		if (requestCode == Constants.LOGIN_VIA_GOOGLE
+				&& resultCode == RESULT_OK) {
+			Toast.makeText(this, "login GOOGLE", Toast.LENGTH_SHORT).show();
+			mPlusClient.connect();
+			
 		}
 	}
 
@@ -481,7 +494,6 @@ public class LoginActivity extends Activity
 					String lastname = obj.getString("last_name");
 					String email = obj.getString("email");
 					String username = obj.getString("username");
-					// Editor editor = mSpLogin.edit();
 					editor.putString("uid", uid);
 					editor.putString("first_name", firstname);
 					editor.putString("last_name", lastname);
@@ -528,7 +540,7 @@ public class LoginActivity extends Activity
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-				facebook();
+				
 				Toast.makeText(getApplicationContext(), "Successfull !",
 						Toast.LENGTH_SHORT).show();
 
@@ -686,67 +698,71 @@ public class LoginActivity extends Activity
 
 	}
 
-	// @Override
-	// public void onConnected(Bundle connectionHint) {
-	//
-	// Person user = mPlusClient.getCurrentPerson();
-	// if (user != null) {
-	// String uid = user.getId();
-	// String username = user.getNickname();
-	// // GoogleApiClient googleApi;
-	// String email = mPlusClient.getAccountName();
-	// Editor editor = mSpLogin.edit();
-	// editor.putString("uid", uid);
-	// editor.putString("first_name", null);
-	// editor.putString("last_name", null);
-	// editor.putString("email", email);
-	// editor.putString("username", username);
-	// editor.putString("provider", Constants.PROVIDER_GOOGLE);
-	// editor.commit();
-	// asynctasksociallogin async = new asynctasksociallogin(
-	// LoginActivity.this);
-	// async.execute(uid, Constants.PROVIDER_GOOGLE);
-	// UserDetail userDetail = null;
-	// try {
-	// userDetail = async.get();
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// Log.d("", "async.execute");
-	// if (userDetail.getStatus().equals("success")) {
-	// editor = mSpLogin.edit();
-	// editor.putString("username", userDetail.getUsername());
-	// editor.putString("userPhotoImageURL",
-	// userDetail.getUserPhotoImageURL());
-	// editor.commit();
-	// Log.d("", "startActivity");
-	// startActivity(new Intent(LoginActivity.this,
-	// SuccessActivity.class));
-	// } else {
-	// mDialogSocial.show();
-	// mIsDialogshowing = true;
-	// }
-	// }
-	//
-	// // }
-	// }
-	//
-	// @Override
-	// public void onConnectionFailed(ConnectionResult result) {
-	// //
-	// Toast.makeText(getApplicationContext(), "onConnectionFailed",
-	// Toast.LENGTH_SHORT).show();
-	// mConnectionResult = result;
-	// }
-	//
-	// @Override
-	// public void onDisconnected() {
-	// Toast.makeText(getApplicationContext(), "onDisconnected",
-	// Toast.LENGTH_SHORT).show();
-	// }
-	//
-	// @Override
-	// public void onConnectionSuspended(int arg0) {
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		Toast.makeText(getApplicationContext(), "onConnected",
+				Toast.LENGTH_SHORT).show();
+		// mPlusClient.clearDefaultAccount();
+		// mPlusClient.connect();
+		Person user = mPlusClient.getCurrentPerson();
+		if (user != null) {
+			String uid = user.getId();
+			String username = user.getNickname();
+			// GoogleApiClient googleApi;
+			String email = mPlusClient.getAccountName();
+			Editor editor = mSpLogin.edit();
+			editor.putString("uid", uid);
+			editor.putString("first_name", null);
+			editor.putString("last_name", null);
+			editor.putString("email", email);
+			editor.putString("username", username);
+			editor.putString("provider", Constants.PROVIDER_GOOGLE);
+			editor.commit();
+			asynctasksociallogin async = new asynctasksociallogin(
+					LoginActivity.this);
+			async.execute(uid, Constants.PROVIDER_GOOGLE);
+			UserDetail userDetail = null;
+			try {
+				userDetail = async.get();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			Log.d("", "async.execute");
+			if (userDetail.getStatus().equals("success")) {
+				editor = mSpLogin.edit();
+				editor.putString("username", userDetail.getUsername());
+				editor.putString("userPhotoImageURL",
+						userDetail.getUserPhotoImageURL());
+				editor.commit();
+				Log.d("", "startActivity");
+				startActivity(new Intent(LoginActivity.this,
+						SuccessActivity.class));
+				finish();
+			} else {
+				mDialogSocial.show();
+				mIsDialogshowing = true;
+			}
+		}
 
-	// }
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult result) {
+
+		Toast.makeText(getApplicationContext(), "onConnectionFailed",
+				Toast.LENGTH_SHORT).show();
+		mConnectionResult = result;
+		loginGoogle();
+	}
+
+	@Override
+	public void onDisconnected() {
+		Toast.makeText(getApplicationContext(), "onDisconnected",
+				Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void onConnectionSuspended(int arg0) {
+
+	}
 }

@@ -81,10 +81,8 @@ public class RegisterActivity extends Activity {
 					try {
 						responseReg = async.get();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (ExecutionException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					if (responseReg != null) {
@@ -163,10 +161,6 @@ public class RegisterActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 1) {
 			if (resultCode == RESULT_OK) {
-				// Image captured and saved to fileUri specified in the Intent
-				// Toast.makeText(this, "Image saved to:\n" + data.getData(),
-				// Toast.LENGTH_LONG).show();
-
 				Bundle extras = data.getExtras();
 				Bitmap imageBitmap = (Bitmap) extras.get("data");
 				mIbAvatar.setImageBitmap(imageBitmap);
