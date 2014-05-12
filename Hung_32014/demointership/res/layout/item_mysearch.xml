@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageButton
+        android:id="@+id/itemmysearch_ib_del"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_delete" />
+
+    <ImageButton
+        android:id="@+id/itemmysearch_ib_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/itemmysearch_tv_string"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_pencil" />
+
+    <CheckBox
+        android:id="@+id/itemmysearch_cb_choose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/itemmysearch_tv_string"
+        android:layout_alignBottom="@+id/itemmysearch_tv_string"
+        android:layout_marginRight="16dp"
+        android:layout_toLeftOf="@+id/itemmysearch_ib_del" />
+
+    <TextView
+        android:id="@+id/itemmysearch_tv_string"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/itemmysearch_ib_del"
+        android:layout_toRightOf="@+id/itemmysearch_ib_edit"
+        android:text="zzzzzzzzzz" />
+
+</RelativeLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1.0" >
+
+        <Button
+            android:id="@+id/searchprofile_bt_savedprofile"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:text="saved" />
+
+        <Button
+            android:id="@+id/searchprofile_bt_createprofile"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:text="create" />
+    </LinearLayout>
+
+</LinearLayout>

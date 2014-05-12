@@ -10,11 +10,8 @@ import org.json.JSONObject;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
-import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
-import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
-import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -28,6 +25,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -46,20 +44,17 @@ import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 import com.facebook.android.Util;
-import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.plus.PlusClient;
-import com.google.android.gms.plus.PlusClient.OnAccessRevokedListener;
 import com.google.android.gms.plus.model.people.Person;
 
 @SuppressLint("NewApi")
 public class LoginActivity extends Activity
 		implements
 		ConnectionCallbacks,
-		OnConnectionFailedListener,
+		OnConnectionFailedListener ,
 		com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks {
 	Button mBtSubmit, mBtCreateAccount, mBtForgotPassword;
 	ImageButton mIbFacebook, mIbTwitter, mIbGoogle;
@@ -102,7 +97,7 @@ public class LoginActivity extends Activity
 		ConfigurationBuilder builder = new ConfigurationBuilder();
 		builder.setOAuthConsumerKey(Constants.CONSUMER_KEY);
 		builder.setOAuthConsumerSecret(Constants.CONSUMER_SECRET);
-		Configuration configuration = builder.build();
+		twitter4j.conf.Configuration configuration = builder.build();
 
 		TwitterFactory factory = new TwitterFactory(configuration);
 		mTwitter = factory.getInstance();
@@ -112,8 +107,9 @@ public class LoginActivity extends Activity
 					.permitAll().build();
 			StrictMode.setThreadPolicy(policy);
 		}
-		Toast.makeText(getApplicationContext(), "oncreate", Toast.LENGTH_SHORT)
-				.show();
+		// Toast.makeText(getApplicationContext(), "oncreate",
+		// Toast.LENGTH_SHORT)
+		// .show();
 	}
 
 	public void onClicks(View v) {
@@ -166,7 +162,7 @@ public class LoginActivity extends Activity
 			if (userdetail.getStatus().equals("success")) {
 
 				startActivity(new Intent(LoginActivity.this,
-						SuccessActivity.class));
+						MapActivity.class));
 				finish();
 			} else {
 				Toast.makeText(getApplicationContext(), userdetail.getError(),
@@ -189,14 +185,14 @@ public class LoginActivity extends Activity
 
 					mConnectionResult.startResolutionForResult(
 							LoginActivity.this, Constants.LOGIN_VIA_GOOGLE);
-					Toast.makeText(getApplicationContext(),
-							"startResolutionForResult", Toast.LENGTH_SHORT)
-							.show();
+					// Toast.makeText(getApplicationContext(),
+					// "startResolutionForResult", Toast.LENGTH_SHORT)
+					// .show();
 				} catch (Exception e) {
 					mConnectionResult = null;
 
 					mPlusClient.connect();
-					//mPlusClient.clearDefaultAccount();
+					// mPlusClient.clearDefaultAccount();
 					// mPlusClient.revokeAccessAndDisconnect(new
 					// OnAccessRevokedListener() {
 					//
@@ -229,7 +225,9 @@ public class LoginActivity extends Activity
 
 	@Override
 	protected void onResume() {
-		Toast.makeText(getApplicationContext(), "onResume", Toast.LENGTH_SHORT).show();
+		// Toast.makeText(getApplicationContext(), "onResume",
+		// Toast.LENGTH_SHORT)
+		// .show();
 		if (mTwitter != null) {
 			String uid = "";
 			String username = "";
@@ -254,6 +252,7 @@ public class LoginActivity extends Activity
 					editor.putString("username", userDetail.getUsername());
 					editor.putString("userPhotoImageURL",
 							userDetail.getUserPhotoImageURL());
+					editor.putString("access_token", userDetail.getAccess_token());
 					editor.commit();
 				} else {
 					mDialogSocial.show();
@@ -269,20 +268,18 @@ public class LoginActivity extends Activity
 				e.printStackTrace();
 			}
 		}
-		
+
 		String name = mSpLogin.getString("username", null);
 		if (name != null) {
-			startActivity(new Intent(LoginActivity.this, SuccessActivity.class));
+			startActivity(new Intent(LoginActivity.this, MapActivity.class));
 		}
 		super.onResume();
 	}
 
-
 	@Override
 	protected void onStop() {
 		super.onStop();
-		if (mPlusClient.isConnected())
-		{	
+		if (mPlusClient.isConnected()) {
 			mPlusClient.clearDefaultAccount();
 			mPlusClient.disconnect();
 		}
@@ -354,27 +351,19 @@ public class LoginActivity extends Activity
 		if (done) {
 			String uid = mSpLogin.getString("uid", "");
 			String provider = mSpLogin.getString("provider", "");
-			/* if (provider.equals(Constants.PROVIDER_FACEBOOK)) {
-				asynctasksociallogin async = new asynctasksociallogin(
-						LoginActivity.this);
-				UserDetail userDetail = null;
-				async.execute(uid, provider);
-				try {
-					userDetail = async.get();
-					if (userDetail.getStatus().equals("success")) {
-						Editor editor = mSpLogin.edit();
-						editor.putString("username", userDetail.getUsername());
-						editor.commit();
-						startActivity(new Intent(LoginActivity.this,
-								SuccessActivity.class));
-						finish();
-					} else {
-						mDialogSocial.show();
-					}
-				} catch (Exception e) {
-
-				}
-			} */
+			/*
+			 * if (provider.equals(Constants.PROVIDER_FACEBOOK)) {
+			 * asynctasksociallogin async = new asynctasksociallogin(
+			 * LoginActivity.this); UserDetail userDetail = null;
+			 * async.execute(uid, provider); try { userDetail = async.get(); if
+			 * (userDetail.getStatus().equals("success")) { Editor editor =
+			 * mSpLogin.edit(); editor.putString("username",
+			 * userDetail.getUsername()); editor.commit(); startActivity(new
+			 * Intent(LoginActivity.this, SuccessActivity.class)); finish(); }
+			 * else { mDialogSocial.show(); } } catch (Exception e) {
+			 * 
+			 * } }
+			 */
 			if (provider.equals(Constants.PROVIDER_TWITTER)) {
 				String username = mSpLogin.getString("username", "");
 				asynctasksociallogin async = new asynctasksociallogin(
@@ -386,9 +375,10 @@ public class LoginActivity extends Activity
 					if (userDetail.getStatus().equals("success")) {
 						Editor editor = mSpLogin.edit();
 						editor.putString("username", userDetail.getUsername());
+						editor.putString("access_token", userDetail.getAccess_token());
 						editor.commit();
 						startActivity(new Intent(LoginActivity.this,
-								SuccessActivity.class));
+								MapActivity.class));
 						finish();
 					} else {
 						mDialogSocial.show();
@@ -407,9 +397,10 @@ public class LoginActivity extends Activity
 					if (userDetail.getStatus().equals("success")) {
 						Editor editor = mSpLogin.edit();
 						editor.putString("username", userDetail.getUsername());
+						editor.putString("access_token", userDetail.getAccess_token());
 						editor.commit();
 						startActivity(new Intent(LoginActivity.this,
-								SuccessActivity.class));
+								MapActivity.class));
 						finish();
 					} else {
 						mDialogSocial.show();
@@ -426,8 +417,8 @@ public class LoginActivity extends Activity
 	protected void onActivityResult(int requestCode, int resultCode,
 			Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-		Toast.makeText(getApplicationContext(), "onActivityResult",
-				Toast.LENGTH_SHORT).show();
+		// Toast.makeText(getApplicationContext(), "onActivityResult",
+		// Toast.LENGTH_SHORT).show();
 		check_token();
 		if (requestCode == Constants.REGISTER) {
 			if (resultCode == RESULT_OK) {
@@ -440,7 +431,7 @@ public class LoginActivity extends Activity
 				try {
 					String oauthVerifier = intent.getExtras().getString(
 							Constants.IEXTRA_OAUTH_VERIFIER);
-					AccessToken accessToken = mTwitter.getOAuthAccessToken(
+					twitter4j.auth.AccessToken accessToken = mTwitter.getOAuthAccessToken(
 							mRequestToken, oauthVerifier);
 					SharedPreferences pref = getSharedPreferences(
 							Constants.TWITTER_LOG, MODE_PRIVATE);
@@ -461,9 +452,9 @@ public class LoginActivity extends Activity
 		}
 		if (requestCode == Constants.LOGIN_VIA_GOOGLE
 				&& resultCode == RESULT_OK) {
-			Toast.makeText(this, "login GOOGLE", Toast.LENGTH_SHORT).show();
+			// Toast.makeText(this, "login GOOGLE", Toast.LENGTH_SHORT).show();
 			mPlusClient.connect();
-			
+
 		}
 	}
 
@@ -523,7 +514,7 @@ public class LoginActivity extends Activity
 						editor.putString("username", userDetai.getUsername());
 						editor.commit();
 						startActivity(new Intent(LoginActivity.this,
-								SuccessActivity.class));
+								MapActivity.class));
 						finish();
 
 					} else {
@@ -540,7 +531,7 @@ public class LoginActivity extends Activity
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-				
+
 				Toast.makeText(getApplicationContext(), "Successfull !",
 						Toast.LENGTH_SHORT).show();
 
@@ -631,13 +622,14 @@ public class LoginActivity extends Activity
 
 		mDialogSocial = new Dialog(LoginActivity.this);
 		mDialogSocial.setContentView(R.layout.dialog_sociallogin);
+	
 		Button submitBtn = (Button) mDialogSocial
 				.findViewById(R.id.sociallogin_bt_submit);
 		final EditText EtUsername = (EditText) mDialogSocial
 				.findViewById(R.id.sociallogin_et_username);
 		final EditText EtZipcode = (EditText) mDialogSocial
 				.findViewById(R.id.sociallogin_et_zipcode);
-
+		
 		submitBtn.setOnClickListener(new View.OnClickListener() {
 			@SuppressWarnings("deprecation")
 			@Override
@@ -668,7 +660,7 @@ public class LoginActivity extends Activity
 				if (userDetail.getStatus().equals("success")) {
 					mDialogSocial.dismiss();
 					startActivity(new Intent(LoginActivity.this,
-							SuccessActivity.class));
+							MapActivity.class));
 				} else {
 					mDialogSocial.dismiss();
 					Toast.makeText(getApplicationContext(),
@@ -695,13 +687,14 @@ public class LoginActivity extends Activity
 
 			}
 		});
+//		mDialogSocial.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 	}
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		Toast.makeText(getApplicationContext(), "onConnected",
-				Toast.LENGTH_SHORT).show();
+		// Toast.makeText(getApplicationContext(), "onConnected",
+		// Toast.LENGTH_SHORT).show();
 		// mPlusClient.clearDefaultAccount();
 		// mPlusClient.connect();
 		Person user = mPlusClient.getCurrentPerson();
@@ -733,10 +726,11 @@ public class LoginActivity extends Activity
 				editor.putString("username", userDetail.getUsername());
 				editor.putString("userPhotoImageURL",
 						userDetail.getUserPhotoImageURL());
+				editor.putString("access_token", userDetail.getAccess_token());
 				editor.commit();
 				Log.d("", "startActivity");
 				startActivity(new Intent(LoginActivity.this,
-						SuccessActivity.class));
+						MapActivity.class));
 				finish();
 			} else {
 				mDialogSocial.show();
@@ -749,16 +743,16 @@ public class LoginActivity extends Activity
 	@Override
 	public void onConnectionFailed(ConnectionResult result) {
 
-		Toast.makeText(getApplicationContext(), "onConnectionFailed",
-				Toast.LENGTH_SHORT).show();
+		// Toast.makeText(getApplicationContext(), "onConnectionFailed",
+		// Toast.LENGTH_SHORT).show();
 		mConnectionResult = result;
 		loginGoogle();
 	}
 
 	@Override
 	public void onDisconnected() {
-		Toast.makeText(getApplicationContext(), "onDisconnected",
-				Toast.LENGTH_SHORT).show();
+		// Toast.makeText(getApplicationContext(), "onDisconnected",
+		// Toast.LENGTH_SHORT).show();
 	}
 
 	@Override

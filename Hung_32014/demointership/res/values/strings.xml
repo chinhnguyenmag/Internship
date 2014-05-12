@@ -29,5 +29,14 @@
 	<string name="avatar_takeaphoto">Take A New Photo</string>
 	<string name="avatar_chooseimage">Choose From Library</string>
 	<string name="avatar_cancel">Cancel</string>
+	<string name="map_et_search_hint">Search (menu item, addy , city/zip, name, ethnicity)</string>
+	<string name="map_bt_map">Map</string>
+	<string name="map_bt_list">List</string>
+	<string name="nomalsearch_tv_defaultsearch">Run Default Search Profile</string>
+	<string name="nomalsearch_tv_title">Search</string>
+	<string name="nomalsearch_et_search">Keyword Search</string>
+	<string name="nomalsearch_bt_submit">Submit</string>
+	<string name="nomalsearch_bt_cancel">Cancel</string>
+	<string name="nomalsearch_tv_or">or</string>
 	
 </resources>
