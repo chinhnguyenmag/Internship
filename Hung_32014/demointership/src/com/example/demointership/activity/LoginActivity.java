@@ -38,6 +38,7 @@ import com.example.demointership.asyntask.asynctaskforgotpassword;
 import com.example.demointership.asyntask.asynctasklogin;
 import com.example.demointership.asyntask.asynctasksociallogin;
 import com.example.demointership.asyntask.asynctasksocialregister;
+import com.example.demointership.inter.LoginNomal;
 import com.example.demointership.model.UserDetail;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
@@ -54,8 +55,9 @@ import com.google.android.gms.plus.model.people.Person;
 public class LoginActivity extends Activity
 		implements
 		ConnectionCallbacks,
-		OnConnectionFailedListener ,
-		com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks {
+		OnConnectionFailedListener,
+		com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks, LoginNomal
+		{
 	Button mBtSubmit, mBtCreateAccount, mBtForgotPassword;
 	ImageButton mIbFacebook, mIbTwitter, mIbGoogle;
 	EditText mEtUsername, mEtPassword;
@@ -175,9 +177,6 @@ public class LoginActivity extends Activity
 
 	private void loginGoogle() {
 
-		// Intent intent = AccountPicker.newChooseAccountIntent(null, null,
-		// new String[] { "com.google" }, false, null, null, null, null);
-		// startActivityForResult(intent, Constants.ACCOUNT_PICKER);
 		mIsGooglePlus = true;
 		try {
 			if (!mPlusClient.isConnected()/* && mConnectionResult.hasResolution() */) {
@@ -185,32 +184,12 @@ public class LoginActivity extends Activity
 
 					mConnectionResult.startResolutionForResult(
 							LoginActivity.this, Constants.LOGIN_VIA_GOOGLE);
-					// Toast.makeText(getApplicationContext(),
-					// "startResolutionForResult", Toast.LENGTH_SHORT)
-					// .show();
 				} catch (Exception e) {
 					mConnectionResult = null;
 
 					mPlusClient.connect();
-					// mPlusClient.clearDefaultAccount();
-					// mPlusClient.revokeAccessAndDisconnect(new
-					// OnAccessRevokedListener() {
-					//
-					// @Override
-					// public void onAccessRevoked(ConnectionResult status) {
-					// Toast.makeText(getApplicationContext(),
-					// "onAccessRevoked", Toast.LENGTH_SHORT).show();
-					// }
-					// });
 				}
 			}
-			// else {
-			// GooglePlayServicesUtil.getErrorDialog(
-			// mConnectionResult.getErrorCode(), this, 0).show();
-			// }
-			// else if (mPlusClient.isConnected()) {
-			// mPlusClient.disconnect();
-			// }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -219,15 +198,11 @@ public class LoginActivity extends Activity
 	@Override
 	protected void onStart() {
 		super.onStart();
-		// mPlusClient.connect();
 
 	}
 
 	@Override
 	protected void onResume() {
-		// Toast.makeText(getApplicationContext(), "onResume",
-		// Toast.LENGTH_SHORT)
-		// .show();
 		if (mTwitter != null) {
 			String uid = "";
 			String username = "";
@@ -252,7 +227,8 @@ public class LoginActivity extends Activity
 					editor.putString("username", userDetail.getUsername());
 					editor.putString("userPhotoImageURL",
 							userDetail.getUserPhotoImageURL());
-					editor.putString("access_token", userDetail.getAccess_token());
+					editor.putString("access_token",
+							userDetail.getAccess_token());
 					editor.commit();
 				} else {
 					mDialogSocial.show();
@@ -283,25 +259,10 @@ public class LoginActivity extends Activity
 			mPlusClient.clearDefaultAccount();
 			mPlusClient.disconnect();
 		}
-		// if (mPlusClient.isConnecting()) {
-		// mPlusClient
-		// .revokeAccessAndDisconnect(new OnAccessRevokedListener() {
-		//
-		// @Override
-		// public void onAccessRevoked(ConnectionResult status) {
-		// Toast.makeText(getApplicationContext(),
-		// "onAccessRevoked", Toast.LENGTH_SHORT)
-		// .show();
-		// }
-		// });
-		// }
 	}
 
 	@Override
 	protected void onDestroy() {
-		// mPlusClient.disconnect();
-		// mFacebook = null;
-		// mTwitter = null;
 		super.onDestroy();
 	}
 
@@ -341,9 +302,6 @@ public class LoginActivity extends Activity
 		if (mTwitter != null) {
 			mTwitter.shutdown();
 		}
-
-		Toast.makeText(LoginActivity.this, "unauthorized", Toast.LENGTH_SHORT)
-				.show();
 	}
 
 	private void check_token() {
@@ -351,19 +309,6 @@ public class LoginActivity extends Activity
 		if (done) {
 			String uid = mSpLogin.getString("uid", "");
 			String provider = mSpLogin.getString("provider", "");
-			/*
-			 * if (provider.equals(Constants.PROVIDER_FACEBOOK)) {
-			 * asynctasksociallogin async = new asynctasksociallogin(
-			 * LoginActivity.this); UserDetail userDetail = null;
-			 * async.execute(uid, provider); try { userDetail = async.get(); if
-			 * (userDetail.getStatus().equals("success")) { Editor editor =
-			 * mSpLogin.edit(); editor.putString("username",
-			 * userDetail.getUsername()); editor.commit(); startActivity(new
-			 * Intent(LoginActivity.this, SuccessActivity.class)); finish(); }
-			 * else { mDialogSocial.show(); } } catch (Exception e) {
-			 * 
-			 * } }
-			 */
 			if (provider.equals(Constants.PROVIDER_TWITTER)) {
 				String username = mSpLogin.getString("username", "");
 				asynctasksociallogin async = new asynctasksociallogin(
@@ -375,7 +320,8 @@ public class LoginActivity extends Activity
 					if (userDetail.getStatus().equals("success")) {
 						Editor editor = mSpLogin.edit();
 						editor.putString("username", userDetail.getUsername());
-						editor.putString("access_token", userDetail.getAccess_token());
+						editor.putString("access_token",
+								userDetail.getAccess_token());
 						editor.commit();
 						startActivity(new Intent(LoginActivity.this,
 								MapActivity.class));
@@ -397,7 +343,8 @@ public class LoginActivity extends Activity
 					if (userDetail.getStatus().equals("success")) {
 						Editor editor = mSpLogin.edit();
 						editor.putString("username", userDetail.getUsername());
-						editor.putString("access_token", userDetail.getAccess_token());
+						editor.putString("access_token",
+								userDetail.getAccess_token());
 						editor.commit();
 						startActivity(new Intent(LoginActivity.this,
 								MapActivity.class));
@@ -417,13 +364,11 @@ public class LoginActivity extends Activity
 	protected void onActivityResult(int requestCode, int resultCode,
 			Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-		// Toast.makeText(getApplicationContext(), "onActivityResult",
-		// Toast.LENGTH_SHORT).show();
 		check_token();
 		if (requestCode == Constants.REGISTER) {
 			if (resultCode == RESULT_OK) {
 				startActivity(new Intent(LoginActivity.this,
-						SuccessActivity.class));
+						MapActivity.class));
 			}
 		}
 		if (requestCode == Constants.LOGIN_VIA_TWITTER) {
@@ -431,8 +376,8 @@ public class LoginActivity extends Activity
 				try {
 					String oauthVerifier = intent.getExtras().getString(
 							Constants.IEXTRA_OAUTH_VERIFIER);
-					twitter4j.auth.AccessToken accessToken = mTwitter.getOAuthAccessToken(
-							mRequestToken, oauthVerifier);
+					twitter4j.auth.AccessToken accessToken = mTwitter
+							.getOAuthAccessToken(mRequestToken, oauthVerifier);
 					SharedPreferences pref = getSharedPreferences(
 							Constants.TWITTER_LOG, MODE_PRIVATE);
 					SharedPreferences.Editor editor = pref.edit();
@@ -441,8 +386,6 @@ public class LoginActivity extends Activity
 					editor.putString(Constants.PREF_KEY_ACCESS_TOKEN_SECRET,
 							accessToken.getTokenSecret());
 					editor.commit();
-					Toast.makeText(this, "authorized", Toast.LENGTH_SHORT)
-							.show();
 				} catch (TwitterException e) {
 					e.printStackTrace();
 				}
@@ -452,7 +395,6 @@ public class LoginActivity extends Activity
 		}
 		if (requestCode == Constants.LOGIN_VIA_GOOGLE
 				&& resultCode == RESULT_OK) {
-			// Toast.makeText(this, "login GOOGLE", Toast.LENGTH_SHORT).show();
 			mPlusClient.connect();
 
 		}
@@ -531,9 +473,6 @@ public class LoginActivity extends Activity
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-
-				Toast.makeText(getApplicationContext(), "Successfull !",
-						Toast.LENGTH_SHORT).show();
 
 			}
 
@@ -622,14 +561,14 @@ public class LoginActivity extends Activity
 
 		mDialogSocial = new Dialog(LoginActivity.this);
 		mDialogSocial.setContentView(R.layout.dialog_sociallogin);
-	
+
 		Button submitBtn = (Button) mDialogSocial
 				.findViewById(R.id.sociallogin_bt_submit);
 		final EditText EtUsername = (EditText) mDialogSocial
 				.findViewById(R.id.sociallogin_et_username);
 		final EditText EtZipcode = (EditText) mDialogSocial
 				.findViewById(R.id.sociallogin_et_zipcode);
-		
+
 		submitBtn.setOnClickListener(new View.OnClickListener() {
 			@SuppressWarnings("deprecation")
 			@Override
@@ -687,21 +626,15 @@ public class LoginActivity extends Activity
 
 			}
 		});
-//		mDialogSocial.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 	}
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		// Toast.makeText(getApplicationContext(), "onConnected",
-		// Toast.LENGTH_SHORT).show();
-		// mPlusClient.clearDefaultAccount();
-		// mPlusClient.connect();
 		Person user = mPlusClient.getCurrentPerson();
 		if (user != null) {
 			String uid = user.getId();
 			String username = user.getNickname();
-			// GoogleApiClient googleApi;
 			String email = mPlusClient.getAccountName();
 			Editor editor = mSpLogin.edit();
 			editor.putString("uid", uid);
@@ -728,7 +661,6 @@ public class LoginActivity extends Activity
 						userDetail.getUserPhotoImageURL());
 				editor.putString("access_token", userDetail.getAccess_token());
 				editor.commit();
-				Log.d("", "startActivity");
 				startActivity(new Intent(LoginActivity.this,
 						MapActivity.class));
 				finish();
@@ -743,20 +675,28 @@ public class LoginActivity extends Activity
 	@Override
 	public void onConnectionFailed(ConnectionResult result) {
 
-		// Toast.makeText(getApplicationContext(), "onConnectionFailed",
-		// Toast.LENGTH_SHORT).show();
 		mConnectionResult = result;
 		loginGoogle();
 	}
 
 	@Override
 	public void onDisconnected() {
-		// Toast.makeText(getApplicationContext(), "onDisconnected",
-		// Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
 	public void onConnectionSuspended(int arg0) {
 
 	}
+
+	@Override
+	public void onNomalLoginComplete() {
+		
+	}
+
+	@Override
+	public void onNomalLoginFailed() {
+		
+	}
+
+
 }

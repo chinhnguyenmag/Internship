@@ -16,6 +16,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -23,7 +24,6 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -195,8 +195,8 @@ public class MapActivity extends FragmentActivity implements
 																	restaurant
 																			.getAddress())
 															.position(ll));
-											// FillMap();
-											// FillList();
+											// FillMap(mRestaurantsSearch);
+											// FillList(mRestaurantsSearch);
 										}
 									else
 										showToast("Can't connect to server !");
@@ -225,7 +225,24 @@ public class MapActivity extends FragmentActivity implements
 			break;
 
 		case R.id.map_ib_mysearch:
-			startActivity(new Intent(MapActivity.this, MySearchActivity.class));
+		// startActivity(new Intent(MapActivity.this, MySearchActivity.class));
+		// finish();
+		{
+			Editor editor = mSpLogin.edit();
+			editor.remove("uid");
+			editor.remove("first_name");
+			editor.remove("last_name");
+			editor.remove("email");
+			editor.remove("username");
+			editor.remove("provider");
+			editor.remove("access_token");
+			editor.commit();
+			Intent intent = new Intent(getApplicationContext(),
+					LoginActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+			finish();
+		}
 			break;
 		}
 	}
@@ -235,7 +252,7 @@ public class MapActivity extends FragmentActivity implements
 		super.onDestroy();
 	}
 
-	private void FillMap(RestaurantsObject[] Restaurants) {
+	private void FillMap(/* RestaurantsObject[] Restaurants */) {
 		if (mLocationClient.isConnected()) {
 			Location location = mLocationClient.getLastLocation();
 			asynctask async = new asynctask(MapActivity.this);
@@ -245,12 +262,12 @@ public class MapActivity extends FragmentActivity implements
 						String.valueOf(location.getLatitude()),
 						String.valueOf(location.getLongitude()), "");
 
-				Restaurants = async.get();
+				mRestaurants = async.get();
 			} catch (Exception e) {
-				Restaurants = null;
+				mRestaurants = null;
 			}
-			if (Restaurants != null)
-				for (RestaurantsObject restaurant : Restaurants) {
+			if (mRestaurants != null)
+				for (RestaurantsObject restaurant : mRestaurants) {
 					LatLng ll = new LatLng(restaurant.getLat(),
 							restaurant.getLong());
 					mGoogleMap.addMarker(new MarkerOptions()
@@ -266,17 +283,18 @@ public class MapActivity extends FragmentActivity implements
 		Toast.makeText(getApplicationContext(), st, Toast.LENGTH_SHORT).show();
 	}
 
-	private void FillList(RestaurantsObject[] Restaurants) {
+	private void FillList(/* RestaurantsObject[] Restaurants */) {
 
-		if (Restaurants != null) {
+		if (mRestaurants != null) {
 			HorizontalAdapter horizontaladapter = new HorizontalAdapter(this,
-					Restaurants);
+					mRestaurants);
 			mHlvItem.setAdapter(horizontaladapter);
 
 			NomalListAdapter listadapter = new NomalListAdapter(this,
-					R.layout.item_list, Restaurants);
+					R.layout.item_list, mRestaurants);
 			mLvListItem.setAdapter(listadapter);
-		}
+		} else
+			showToast(" it's null");
 	}
 
 	private class HorizontalAdapter extends ArrayAdapter<RestaurantsObject> {
@@ -451,8 +469,8 @@ public class MapActivity extends FragmentActivity implements
 
 		mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currenlocation,
 				10));
-		FillMap(mRestaurants);
-		FillList(mRestaurants);
+		FillMap();
+		FillList();
 	}
 
 	@Override

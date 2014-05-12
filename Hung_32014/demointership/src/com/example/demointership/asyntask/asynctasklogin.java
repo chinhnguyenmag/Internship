@@ -6,10 +6,12 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.location.GpsStatus.Listener;
 import android.os.AsyncTask;
 
 import com.example.demointership.Util.Server;
 import com.example.demointership.Util.ServerURL;
+import com.example.demointership.inter.LoginNomal;
 import com.example.demointership.model.UserDetail;
 import com.google.gson.Gson;
 
@@ -24,6 +26,7 @@ public class asynctasklogin extends AsyncTask<String, Void, UserDetail> {
 	@Override
 	protected void onPostExecute(UserDetail result) {
 		mDialog.dismiss();
+//		Listener listerner = (Listener) new LoginNomal();
 		super.onPostExecute(result);
 	}
 

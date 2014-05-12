@@ -50,42 +50,47 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:layout_weight="1" >
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/map_ll_viewmap"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:orientation="vertical"
             android:visibility="visible" >
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="fill_vertical"
-                >
+                android:layout_height="match_parent"
+                android:layout_above="@+id/map_layout_gallery_restaurant"
+                android:orientation="vertical" >
 
                 <fragment
                     android:id="@+id/map_gm_map"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="fill_parent"
                     class="com.google.android.gms.maps.SupportMapFragment"
                     android:scrollbars="vertical" />
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/map_layout_gallery_restaurant"
                 android:layout_width="match_parent"
-                android:layout_height="0sp"
-                android:layout_weight="1" >
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal" >
 
                 <com.meetme.android.horizontallistview.HorizontalListView
                     android:id="@+id/map_hlv_list"
                     android:layout_width="match_parent"
-                    android:layout_height="120sp" >
-                </com.meetme.android.horizontallistview.HorizontalListView>
+                    android:layout_height="120dp" >
 
+                </com.meetme.android.horizontallistview.HorizontalListView>
             </LinearLayout>
-        </LinearLayout>
+
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/map_ll_viewlist"
