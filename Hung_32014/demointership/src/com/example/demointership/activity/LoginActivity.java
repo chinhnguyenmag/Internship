@@ -2,9 +2,7 @@ package com.example.demointership.activity;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.concurrent.ExecutionException;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import twitter4j.Twitter;
@@ -16,16 +14,13 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -34,12 +29,14 @@ import android.widget.Toast;
 import com.example.demointership.R;
 import com.example.demointership.Util.Constants;
 import com.example.demointership.Util.Utils;
-import com.example.demointership.asyntask.asynctaskforgotpassword;
-import com.example.demointership.asyntask.asynctasklogin;
-import com.example.demointership.asyntask.asynctasksociallogin;
-import com.example.demointership.asyntask.asynctasksocialregister;
-import com.example.demointership.inter.LoginNomal;
-import com.example.demointership.model.UserDetail;
+import com.example.demointership.asyntask.ForGotPasswordAsyncTask;
+import com.example.demointership.asyntask.LoginNomalAsyncTask;
+import com.example.demointership.asyntask.LoginSocialAsyncTask;
+import com.example.demointership.asyntask.RegisterSocialAsyncTask;
+import com.example.demointership.listener.ForGotPasswordListener;
+import com.example.demointership.listener.LoginNomalListener;
+import com.example.demointership.listener.LoginSocialListener;
+import com.example.demointership.listener.RegisterSocialListener;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
@@ -56,21 +53,20 @@ public class LoginActivity extends Activity
 		implements
 		ConnectionCallbacks,
 		OnConnectionFailedListener,
-		com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks, LoginNomal
-		{
+		com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks,
+		LoginNomalListener, ForGotPasswordListener, LoginSocialListener,
+		RegisterSocialListener {
 	Button mBtSubmit, mBtCreateAccount, mBtForgotPassword;
 	ImageButton mIbFacebook, mIbTwitter, mIbGoogle;
 	EditText mEtUsername, mEtPassword;
 	Facebook mFacebook;
-	private ConnectionResult mConnectionResult;
-	private Twitter mTwitter;
-	private RequestToken mRequestToken;
-	Dialog mDialogSocial;
+	ConnectionResult mConnectionResult;
+	Twitter mTwitter;
+	RequestToken mRequestToken;
 	boolean mIsDialogshowing = false;
 	boolean mIsGooglePlus = false, mIsFacebook = false, mIsTwitter = false;
 	SharedPreferences mSpLogin;
 	PlusClient mPlusClient;
-	ProgressDialog mProgressLoading;
 
 	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
 	@SuppressWarnings("deprecation")
@@ -103,15 +99,11 @@ public class LoginActivity extends Activity
 
 		TwitterFactory factory = new TwitterFactory(configuration);
 		mTwitter = factory.getInstance();
-		showDialogSocialLogin();
 		if (android.os.Build.VERSION.SDK_INT > 8) {
 			StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
 					.permitAll().build();
 			StrictMode.setThreadPolicy(policy);
 		}
-		// Toast.makeText(getApplicationContext(), "oncreate",
-		// Toast.LENGTH_SHORT)
-		// .show();
 	}
 
 	public void onClicks(View v) {
@@ -145,34 +137,14 @@ public class LoginActivity extends Activity
 		String username = mEtUsername.getText().toString();
 		String password = mEtPassword.getText().toString();
 		if (username.length() != 0 && password.length() != 0) {
-			asynctasklogin async = new asynctasklogin(LoginActivity.this);
+			LoginNomalAsyncTask async = new LoginNomalAsyncTask(this, this);
 			if (Utils.isValidEmail(getApplicationContext(), username)) {
 				async.execute(username, null, password);
 			} else {
 				async.execute(null, username, password);
 			}
-			UserDetail userdetail = null;
-			try {
-				userdetail = async.get();
-			} catch (InterruptedException e) {
-
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-
-				e.printStackTrace();
-			}
-			if (userdetail.getStatus().equals("success")) {
-
-				startActivity(new Intent(LoginActivity.this,
-						MapActivity.class));
-				finish();
-			} else {
-				Toast.makeText(getApplicationContext(), userdetail.getError(),
-						Toast.LENGTH_SHORT).show();
-			}
 		} else
-			Toast.makeText(getApplicationContext(), "Insert data",
-					Toast.LENGTH_SHORT).show();
+			showToast("Please Insert Data !");
 	}
 
 	private void loginGoogle() {
@@ -217,39 +189,24 @@ public class LoginActivity extends Activity
 				editor.putString("provider", Constants.PROVIDER_TWITTER);
 				editor.commit();
 
-				asynctasksociallogin async = new asynctasksociallogin(
-						LoginActivity.this);
+				LoginSocialAsyncTask async = new LoginSocialAsyncTask(this,
+						this);
 				async.execute(uid, Constants.PROVIDER_TWITTER, username);
-				UserDetail userDetail = null;
-				userDetail = async.get();
-				if (userDetail.getStatus().equals("success")) {
-					editor = mSpLogin.edit();
-					editor.putString("username", userDetail.getUsername());
-					editor.putString("userPhotoImageURL",
-							userDetail.getUserPhotoImageURL());
-					editor.putString("access_token",
-							userDetail.getAccess_token());
-					editor.commit();
-				} else {
-					mDialogSocial.show();
-					mIsDialogshowing = true;
-				}
-			} catch (IllegalStateException e) {
-				e.printStackTrace();
-			} catch (TwitterException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
+
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-
-		String name = mSpLogin.getString("username", null);
-		if (name != null) {
-			startActivity(new Intent(LoginActivity.this, MapActivity.class));
+		String access_token = mSpLogin.getString("access_token", null);
+		String username = mSpLogin.getString("username", null);
+		if (access_token != null && username != null) {
+			startActivity(new Intent(this, MapActivity.class));
 		}
 		super.onResume();
+	}
+
+	private void showToast(String st) {
+		Toast.makeText(this, st, Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -311,50 +268,14 @@ public class LoginActivity extends Activity
 			String provider = mSpLogin.getString("provider", "");
 			if (provider.equals(Constants.PROVIDER_TWITTER)) {
 				String username = mSpLogin.getString("username", "");
-				asynctasksociallogin async = new asynctasksociallogin(
-						LoginActivity.this);
-				UserDetail userDetail = null;
+				LoginSocialAsyncTask async = new LoginSocialAsyncTask(this,
+						this);
 				async.execute(uid, provider, username);
-				try {
-					userDetail = async.get();
-					if (userDetail.getStatus().equals("success")) {
-						Editor editor = mSpLogin.edit();
-						editor.putString("username", userDetail.getUsername());
-						editor.putString("access_token",
-								userDetail.getAccess_token());
-						editor.commit();
-						startActivity(new Intent(LoginActivity.this,
-								MapActivity.class));
-						finish();
-					} else {
-						mDialogSocial.show();
-					}
-				} catch (Exception e) {
-
-				}
 			}
 			if (provider.equals(Constants.PROVIDER_GOOGLE)) {
-				asynctasksociallogin async = new asynctasksociallogin(
-						LoginActivity.this);
-				UserDetail userDetail = null;
+				LoginSocialAsyncTask async = new LoginSocialAsyncTask(this,
+						this);
 				async.execute(uid, provider);
-				try {
-					userDetail = async.get();
-					if (userDetail.getStatus().equals("success")) {
-						Editor editor = mSpLogin.edit();
-						editor.putString("username", userDetail.getUsername());
-						editor.putString("access_token",
-								userDetail.getAccess_token());
-						editor.commit();
-						startActivity(new Intent(LoginActivity.this,
-								MapActivity.class));
-						finish();
-					} else {
-						mDialogSocial.show();
-					}
-				} catch (Exception e) {
-
-				}
 			}
 
 		}
@@ -367,8 +288,7 @@ public class LoginActivity extends Activity
 		check_token();
 		if (requestCode == Constants.REGISTER) {
 			if (resultCode == RESULT_OK) {
-				startActivity(new Intent(LoginActivity.this,
-						MapActivity.class));
+				startActivity(new Intent(LoginActivity.this, MapActivity.class));
 			}
 		}
 		if (requestCode == Constants.LOGIN_VIA_TWITTER) {
@@ -378,14 +298,14 @@ public class LoginActivity extends Activity
 							Constants.IEXTRA_OAUTH_VERIFIER);
 					twitter4j.auth.AccessToken accessToken = mTwitter
 							.getOAuthAccessToken(mRequestToken, oauthVerifier);
-					SharedPreferences pref = getSharedPreferences(
-							Constants.TWITTER_LOG, MODE_PRIVATE);
-					SharedPreferences.Editor editor = pref.edit();
-					editor.putString(Constants.PREF_KEY_ACCESS_TOKEN,
-							accessToken.getToken());
-					editor.putString(Constants.PREF_KEY_ACCESS_TOKEN_SECRET,
-							accessToken.getTokenSecret());
-					editor.commit();
+					// SharedPreferences pref = getSharedPreferences(
+					// Constants.TWITTER_LOG, MODE_PRIVATE);
+					// SharedPreferences.Editor editor = pref.edit();
+					// editor.putString(Constants.PREF_KEY_ACCESS_TOKEN,
+					// accessToken.getToken());
+					// editor.putString(Constants.PREF_KEY_ACCESS_TOKEN_SECRET,
+					// accessToken.getTokenSecret());
+					// editor.commit();
 				} catch (TwitterException e) {
 					e.printStackTrace();
 				}
@@ -419,7 +339,6 @@ public class LoginActivity extends Activity
 				Editor editor = mSpLogin.edit();
 				editor.putBoolean("do", true);
 				try {
-					Log.d("facebook", "try");
 					String json = mFacebook.request("me");
 					JSONObject obj = Util.parseJson(json);
 					String uid = obj.getString("id");
@@ -434,46 +353,12 @@ public class LoginActivity extends Activity
 					editor.putString("username", username);
 					editor.putString("provider", Constants.PROVIDER_FACEBOOK);
 					editor.commit();
-					asynctasksociallogin async = new asynctasksociallogin(
-							LoginActivity.this);
+					LoginSocialAsyncTask async = new LoginSocialAsyncTask(
+							LoginActivity.this, LoginActivity.this);
 					async.execute(uid, Constants.PROVIDER_FACEBOOK);
-					UserDetail userDetai = null;
-					Log.d("facebook", "userdetail");
-					try {
-						userDetai = async.get();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					} catch (ExecutionException e) {
-						e.printStackTrace();
-					}
-
-					if (userDetai.getStatus().equals("success")) {
-						editor = mSpLogin.edit();
-						editor.putString("access_token",
-								userDetai.getAccess_token());
-						editor.putString("userPhotoImageURL",
-								userDetai.getUserPhotoImageURL());
-						editor.putString("username", userDetai.getUsername());
-						editor.commit();
-						startActivity(new Intent(LoginActivity.this,
-								MapActivity.class));
-						finish();
-
-					} else {
-						mDialogSocial.show();
-						mIsDialogshowing = true;
-					}
-
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (FacebookError e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
-
 			}
 
 			@Override
@@ -498,24 +383,9 @@ public class LoginActivity extends Activity
 			@Override
 			public void onClick(View v) {
 				String email = emailEtDialog.getText().toString();
-				asynctaskforgotpassword async = new asynctaskforgotpassword(
-						LoginActivity.this);
-				UserDetail userDetail = null;
-
-				try {
-					async.execute(email);
-					userDetail = async.get();
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				if (userDetail.getStatus().equals("success")) {
-					Toast.makeText(getApplicationContext(), "OK",
-							Toast.LENGTH_SHORT).show();
-				} else {
-					Toast.makeText(getApplicationContext(), "FAILED",
-							Toast.LENGTH_SHORT).show();
-				}
+				ForGotPasswordAsyncTask async = new ForGotPasswordAsyncTask(
+						LoginActivity.this, LoginActivity.this);
+				async.execute(email);
 				dialog.dismiss();
 			}
 		});
@@ -557,78 +427,6 @@ public class LoginActivity extends Activity
 
 	}
 
-	public void showDialogSocialLogin() {
-
-		mDialogSocial = new Dialog(LoginActivity.this);
-		mDialogSocial.setContentView(R.layout.dialog_sociallogin);
-
-		Button submitBtn = (Button) mDialogSocial
-				.findViewById(R.id.sociallogin_bt_submit);
-		final EditText EtUsername = (EditText) mDialogSocial
-				.findViewById(R.id.sociallogin_et_username);
-		final EditText EtZipcode = (EditText) mDialogSocial
-				.findViewById(R.id.sociallogin_et_zipcode);
-
-		submitBtn.setOnClickListener(new View.OnClickListener() {
-			@SuppressWarnings("deprecation")
-			@Override
-			public void onClick(View v) {
-				String username = EtUsername.getText().toString();
-				String zipcode = EtZipcode.getText().toString();
-				Editor editor = mSpLogin.edit();
-				editor.putString("zip", zipcode);
-				editor.commit();
-
-				asynctasksocialregister async = new asynctasksocialregister(
-						LoginActivity.this);
-				String uid = mSpLogin.getString("uid", null);
-				String email = mSpLogin.getString("email", null);
-				String provider = mSpLogin.getString("provider", null);
-
-				async.execute(uid, provider, email, username, "123456", "", "");
-				UserDetail userDetail = null;
-				try {
-					userDetail = async.get();
-				} catch (InterruptedException e) {
-
-					e.printStackTrace();
-				} catch (ExecutionException e) {
-
-					e.printStackTrace();
-				}
-				if (userDetail.getStatus().equals("success")) {
-					mDialogSocial.dismiss();
-					startActivity(new Intent(LoginActivity.this,
-							MapActivity.class));
-				} else {
-					mDialogSocial.dismiss();
-					Toast.makeText(getApplicationContext(),
-							"register social failed ! ", Toast.LENGTH_SHORT)
-							.show();
-					if (mIsFacebook)
-						try {
-							mFacebook.logout(getApplicationContext());
-							mIsFacebook = false;
-						} catch (MalformedURLException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					if (mIsTwitter) {
-						logoutFromTwitter();
-						mIsTwitter = false;
-					}
-					if (mIsGooglePlus) {
-						mPlusClient.disconnect();
-						mIsGooglePlus = false;
-					}
-				}
-
-			}
-		});
-
-	}
-
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		Person user = mPlusClient.getCurrentPerson();
@@ -644,30 +442,9 @@ public class LoginActivity extends Activity
 			editor.putString("username", username);
 			editor.putString("provider", Constants.PROVIDER_GOOGLE);
 			editor.commit();
-			asynctasksociallogin async = new asynctasksociallogin(
-					LoginActivity.this);
+			LoginSocialAsyncTask async = new LoginSocialAsyncTask(
+					LoginActivity.this, LoginActivity.this);
 			async.execute(uid, Constants.PROVIDER_GOOGLE);
-			UserDetail userDetail = null;
-			try {
-				userDetail = async.get();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			Log.d("", "async.execute");
-			if (userDetail.getStatus().equals("success")) {
-				editor = mSpLogin.edit();
-				editor.putString("username", userDetail.getUsername());
-				editor.putString("userPhotoImageURL",
-						userDetail.getUserPhotoImageURL());
-				editor.putString("access_token", userDetail.getAccess_token());
-				editor.commit();
-				startActivity(new Intent(LoginActivity.this,
-						MapActivity.class));
-				finish();
-			} else {
-				mDialogSocial.show();
-				mIsDialogshowing = true;
-			}
 		}
 
 	}
@@ -690,13 +467,78 @@ public class LoginActivity extends Activity
 
 	@Override
 	public void onNomalLoginComplete() {
-		
+		startActivity(new Intent(this, MapActivity.class));
+		finish();
 	}
 
 	@Override
 	public void onNomalLoginFailed() {
-		
+		String st = mSpLogin.getString("error", "");
+		showToast(st);
 	}
 
+	@Override
+	public void onForGotPasswordListnerComplete() {
+		showToast("A email was sent to your mail !");
+	}
+
+	@Override
+	public void onForGotPasswordListnerFailed() {
+		showToast("Failed ! ");
+	}
+
+	@Override
+	public void onLoginSocialListenrComplete() {
+		startActivity(new Intent(this, MapActivity.class));
+		finish();
+	}
+
+	@Override
+	public void onLoginSocialListenrFailed() {
+		String username = mSpLogin.getString("username", "");
+		final Dialog dialog = new Dialog(LoginActivity.this);
+		dialog.setContentView(R.layout.dialog_sociallogin);
+
+		Button submitBtn = (Button) dialog
+				.findViewById(R.id.sociallogin_bt_submit);
+		final EditText EtUsername = (EditText) dialog
+				.findViewById(R.id.sociallogin_et_username);
+		final EditText EtZipcode = (EditText) dialog
+				.findViewById(R.id.sociallogin_et_zipcode);
+		EtUsername.setText(username);
+		submitBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String username = EtUsername.getText().toString();
+				String zipcode = EtZipcode.getText().toString();
+				Editor editor = mSpLogin.edit();
+				editor.putString("zip", zipcode);
+				editor.commit();
+
+				RegisterSocialAsyncTask async = new RegisterSocialAsyncTask(
+						LoginActivity.this, LoginActivity.this);
+				String uid = mSpLogin.getString("uid", null);
+				String email = mSpLogin.getString("email", null);
+				String provider = mSpLogin.getString("provider", null);
+				async.execute(uid, provider, email, username, "123456", "", "");
+			}
+		});
+
+	}
+
+	@Override
+	public void onRegisterSocialListenerComplete() {
+		startActivity(new Intent(this, MapActivity.class));
+		finish();
+	}
+
+	@Override
+	public void onRegisterSocialListenerFailed() {
+		Editor editor = mSpLogin.edit();
+		editor.remove("username");
+		editor.remove("access_token");
+		editor.commit();
+		showToast("Failed to connect by social account");
+	}
 
 }

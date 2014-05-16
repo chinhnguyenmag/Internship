@@ -20,6 +20,9 @@ public class ServerURL {
 	private static final String KEY_ITEM = "/items/";
 	private static final String KEY_MY_POINT = "/points/";
 	private static final String KEY_GET_ALLSEARCHPROFILE = "/users/searchprofile.json?";
+	private static final String KEY_GET_A_SEARCHPROFILE = "users/get searchprofile.json";
+
+
 	private static final String KEY_GET_RUNDEFAULTSEARCHPROFILE = "/locations/run_default.json?";
 	private static final String KEY_POST_ADDSEARCHPROFILE = "/users/addsearchprofile.json";
 	private static final String KEY_POST_EDITSEARCHPROFILE = "/users/editsearchprofile.json";
@@ -330,5 +333,7 @@ public class ServerURL {
 	public static String getKeyAddFriend() {
 		return KEY_ADD_FRIEND;
 	}
-
+	public static String getKeyGetASearchprofile() {
+		return KEY_GET_A_SEARCHPROFILE;
+	}
 }

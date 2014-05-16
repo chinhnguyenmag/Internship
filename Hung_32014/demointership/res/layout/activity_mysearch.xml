@@ -15,14 +15,16 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".5"
-            android:text="Saved Profile" />
+            android:text="@string/mysearch_bt_saved_profile" 
+            android:onClick="onClicks"/>
 
         <Button
             android:id="@+id/mysearch_bt_create"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".5"
-            android:text="Create Profile" />
+            android:text="@string/mysearch_bt_create_profile"
+            android:onClick="onClicks" />
     </LinearLayout>
 
     <LinearLayout
@@ -38,15 +40,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="MySearch Profiles"
-            android:textSize="18dp" />
+            android:text="@string/mysearch_tv_mysearch_profiles"
+            android:textSize="18sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="40sp"
-            android:text="Default"
-            android:textSize="18dp" />
+            android:text="@string/mysearch_tv_default"
+            android:textSize="18sp" />
     </LinearLayout>
 <ListView android:id="@+id/mysearch_lv_list"
     android:layout_width="match_parent"

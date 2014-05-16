@@ -2,12 +2,13 @@ package com.example.demointership.activity;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.concurrent.ExecutionException;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,14 +23,21 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.demointership.R;
-import com.example.demointership.asyntask.asynctaskregister;
-import com.example.demointership.model.UserDetail;
+import com.example.demointership.asyntask.RegisterNomalAsyncTask;
+import com.example.demointership.listener.RegisterNomalListener;
 
-public class RegisterActivity extends Activity {
+public class RegisterActivity extends Activity implements RegisterNomalListener {
 	EditText mEtFirstName, mEtLastName, mEtZipcode, mEtEmail, mEtUsername,
 			mEtPassword, mEtConfirmPassword;
 	Button mBtSubmit;
 	ImageButton mIbAvatar;
+
+	@Override
+	public void onBackPressed() {
+		setResult(RESULT_CANCELED);
+		finish();
+//		super.onBackPressed();
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +56,18 @@ public class RegisterActivity extends Activity {
 
 	}
 
+	public boolean check(String... params) {
+		for (String item : params)
+			if (item.trim().length() == 0)
+				return false;
+		return true;
+
+	}
+
+	public void showToast(String st) {
+		Toast.makeText(this, st, Toast.LENGTH_SHORT).show();
+	}
+
 	@SuppressLint("ShowToast")
 	public void onClicks(View v) {
 		switch (v.getId()) {
@@ -60,50 +80,19 @@ public class RegisterActivity extends Activity {
 			String password = mEtPassword.getText().toString();
 			String confirmpassword = mEtConfirmPassword.getText().toString();
 
-			if (firstname.length() == 0 || lastname.length() == 0
-					|| zipcode.length() == 0 || email.length() == 0
-					|| username.length() == 0 || password.length() == 0
-					|| confirmpassword.length() == 0) {
-				Toast.makeText(getApplicationContext(), "fill all value",
-						Toast.LENGTH_LONG);
+			if (check(firstname, lastname, zipcode, email, username, password,
+					confirmpassword)) {
+				showToast("Please fill all value !");
 			} else {
 				if (!password.equals(confirmpassword)) {
-					Toast.makeText(getApplicationContext(),
-							"Password and Confirm Password are not correct !",
-							Toast.LENGTH_LONG);
+					showToast("Password and Confirm Password are not correct !");
 				} else {
-					asynctaskregister async = new asynctaskregister(
-							RegisterActivity.this);
+					RegisterNomalAsyncTask async = new RegisterNomalAsyncTask(this, this);
 					async.execute(username, email, password, firstname,
 							lastname, zipcode);
-
-					UserDetail responseReg = null;
-					try {
-						responseReg = async.get();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					} catch (ExecutionException e) {
-						e.printStackTrace();
-					}
-					if (responseReg != null) {
-						if (responseReg.getStatus().equals("success")) {
-							Toast.makeText(getApplicationContext(),
-									R.string.register_ok_message,
-									Toast.LENGTH_SHORT).show();
-							setResult(RESULT_OK);
-							finish();
-						} else {
-							Toast.makeText(
-									getApplicationContext(),
-									responseReg.getUsername()
-											+ responseReg.getEmail(),
-									Toast.LENGTH_SHORT).show();
-						}
-
-					}
 				}
-
 			}
+
 			break;
 		case R.id.register_ib_avatar: // image Button avatar
 
@@ -226,6 +215,34 @@ public class RegisterActivity extends Activity {
 			}
 
 		}
+	}
+
+	@Override
+	public void onRegisterNomalComplete() {
+		setResult(RESULT_OK);
+		finish();
+	}
+
+	@Override
+	public void onRegisterNomalFailed() {
+		SharedPreferences SpLogin = getSharedPreferences(
+				"CurrentUser", 0);
+		String st = SpLogin.getString("errors", "");
+		showToast(st);
+		Editor editor= SpLogin.edit();
+		editor.remove("id");
+		editor.remove("username");
+		editor.remove("email");
+		editor.remove("first_name");
+		editor.remove("last_name");
+		editor.remove("zip");
+		editor.remove("access_token");
+		editor.remove("city");
+		editor.remove("state");
+		editor.remove("point");
+		editor.remove("dinner_status");
+		editor.commit();
+		
 	}
 
 }

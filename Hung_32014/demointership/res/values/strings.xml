@@ -25,7 +25,7 @@
 	<string name="sociallogin_tv_zipcode">Enter Your Zip Code</string>
 	<string name="sociallogin_bt_submit">Submit</string>
 	<string name="status">status</string>
-	<string name="register_ok_message">Successfull !</string>
+	<string name="register_ok_message">Successful !</string>
 	<string name="avatar_takeaphoto">Take A New Photo</string>
 	<string name="avatar_chooseimage">Choose From Library</string>
 	<string name="avatar_cancel">Cancel</string>
@@ -38,5 +38,11 @@
 	<string name="nomalsearch_bt_submit">Submit</string>
 	<string name="nomalsearch_bt_cancel">Cancel</string>
 	<string name="nomalsearch_tv_or">or</string>
+	<string name="menu_logout">Logout</string>
+	<string name="toast_logout_failed">Invalid Auth key</string>
+	<string name="mysearch_bt_saved_profile">Saved Profile</string>
+	<string name="mysearch_bt_create_profile">Create Profile</string>
+	<string name="mysearch_tv_mysearch_profiles">MySearch Profiles</string>
+	<string name="mysearch_tv_default">Default</string>
 	
 </resources>

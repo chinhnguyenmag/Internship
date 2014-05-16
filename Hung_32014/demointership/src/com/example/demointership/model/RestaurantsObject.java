@@ -1,5 +1,7 @@
 package com.example.demointership.model;
 
+import android.graphics.Bitmap;
+
 import com.google.gson.annotations.SerializedName;
 
 public class RestaurantsObject {
@@ -27,6 +29,13 @@ public class RestaurantsObject {
 	private float distance;
 	@SerializedName("logo")
 	private String logo;
+	private Bitmap imagelogo;
+	public Bitmap getImagelogo() {
+		return imagelogo;
+	}
+	public void setImagelogo(Bitmap imagelogo) {
+		this.imagelogo = imagelogo;
+	}
 	public String getStatus() {
 		return status;
 	}
