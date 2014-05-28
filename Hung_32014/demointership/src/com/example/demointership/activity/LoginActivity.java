@@ -29,10 +29,10 @@ import android.widget.Toast;
 import com.example.demointership.R;
 import com.example.demointership.Util.Constants;
 import com.example.demointership.Util.Utils;
-import com.example.demointership.asyntask.ForGotPasswordAsyncTask;
-import com.example.demointership.asyntask.LoginNomalAsyncTask;
-import com.example.demointership.asyntask.LoginSocialAsyncTask;
-import com.example.demointership.asyntask.RegisterSocialAsyncTask;
+import com.example.demointership.asynctask.ForGotPasswordAsyncTask;
+import com.example.demointership.asynctask.LoginNomalAsyncTask;
+import com.example.demointership.asynctask.LoginSocialAsyncTask;
+import com.example.demointership.asynctask.RegisterSocialAsyncTask;
 import com.example.demointership.listener.ForGotPasswordListener;
 import com.example.demointership.listener.LoginNomalListener;
 import com.example.demointership.listener.LoginSocialListener;
@@ -86,7 +86,7 @@ public class LoginActivity extends Activity
 		mEtPassword = (EditText) findViewById(R.id.login_et_password);
 
 		mFacebook = new Facebook(Constants.APP_ID);
-		mSpLogin = getSharedPreferences("CurrentUser", 0);
+		mSpLogin = getSharedPreferences(Constants.KEY_CURRENT_USER_XML, 0);
 		mPlusClient = new PlusClient.Builder(this, this, this).setActions(
 				"http://schemas.google.com/AddActivity",
 				"http://schemas.google.com/BuyActivity")
@@ -466,35 +466,38 @@ public class LoginActivity extends Activity
 	}
 
 	@Override
-	public void onNomalLoginComplete() {
+	public void onLoginNomalListenerComplete() {
 		startActivity(new Intent(this, MapActivity.class));
 		finish();
 	}
 
 	@Override
-	public void onNomalLoginFailed() {
+	public void onLoginNomalListenerFailed() {
 		String st = mSpLogin.getString("error", "");
+		Editor editor = mSpLogin.edit();
+		editor.remove("error");
+		editor.commit();
 		showToast(st);
 	}
 
 	@Override
-	public void onForGotPasswordListnerComplete() {
+	public void onForGotPasswordListenerComplete() {
 		showToast("A email was sent to your mail !");
 	}
 
 	@Override
-	public void onForGotPasswordListnerFailed() {
+	public void onForGotPasswordListenerFailed() {
 		showToast("Failed ! ");
 	}
 
 	@Override
-	public void onLoginSocialListenrComplete() {
+	public void onLoginSocialListenerComplete() {
 		startActivity(new Intent(this, MapActivity.class));
 		finish();
 	}
 
 	@Override
-	public void onLoginSocialListenrFailed() {
+	public void onLoginSocialListenerFailed() {
 		String username = mSpLogin.getString("username", "");
 		final Dialog dialog = new Dialog(LoginActivity.this);
 		dialog.setContentView(R.layout.dialog_sociallogin);

@@ -21,7 +21,11 @@ public class ServerURL {
 	private static final String KEY_MY_POINT = "/points/";
 	private static final String KEY_GET_ALLSEARCHPROFILE = "/users/searchprofile.json?";
 	private static final String KEY_GET_A_SEARCHPROFILE = "users/get searchprofile.json";
+	private static final String KEY_RUN_MY_DEFAULTSEARCH = "/locations/run_default.json";
 
+	public static String getKeyRunMyDefaultsearch() {
+		return KEY_RUN_MY_DEFAULTSEARCH;
+	}
 
 	private static final String KEY_GET_RUNDEFAULTSEARCHPROFILE = "/locations/run_default.json?";
 	private static final String KEY_POST_ADDSEARCHPROFILE = "/users/addsearchprofile.json";

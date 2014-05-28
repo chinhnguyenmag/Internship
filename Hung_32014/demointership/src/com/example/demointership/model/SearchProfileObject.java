@@ -3,6 +3,10 @@ package com.example.demointership.model;
 import com.google.gson.annotations.SerializedName;
 
 public class SearchProfileObject {
+	@SerializedName("status")
+	private String status;
+	@SerializedName("error")
+	private String error;
 	@SerializedName("id")
 	private int id;
 	@SerializedName("name")
@@ -99,4 +103,18 @@ public class SearchProfileObject {
 	public void setIsdefault(int isdefault) {
 		this.isdefault = isdefault;
 	}
+	public String getStatus() {
+		if (this.status == null) return "";
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getError() {
+		return error;
+	}
+	public void setError(String error) {
+		this.error = error;
+	}
+	
 }

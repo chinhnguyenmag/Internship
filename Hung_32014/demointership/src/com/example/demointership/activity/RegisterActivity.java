@@ -23,7 +23,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.demointership.R;
-import com.example.demointership.asyntask.RegisterNomalAsyncTask;
+import com.example.demointership.asynctask.RegisterNomalAsyncTask;
 import com.example.demointership.listener.RegisterNomalListener;
 
 public class RegisterActivity extends Activity implements RegisterNomalListener {
@@ -218,13 +218,13 @@ public class RegisterActivity extends Activity implements RegisterNomalListener 
 	}
 
 	@Override
-	public void onRegisterNomalComplete() {
+	public void onRegisterNomalListenerComplete() {
 		setResult(RESULT_OK);
 		finish();
 	}
 
 	@Override
-	public void onRegisterNomalFailed() {
+	public void onRegisterNomalListenerFailed() {
 		SharedPreferences SpLogin = getSharedPreferences(
 				"CurrentUser", 0);
 		String st = SpLogin.getString("errors", "");

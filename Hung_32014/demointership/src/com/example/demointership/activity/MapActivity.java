@@ -8,7 +8,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,38 +15,32 @@ import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.demointership.R;
 import com.example.demointership.Util.GMapV2Direction;
 import com.example.demointership.Util.Temp;
-import com.example.demointership.asyntask.AdvanceSeachAsyncTask;
-import com.example.demointership.asyntask.GetASearchProfileAsyncTask;
-import com.example.demointership.asyntask.LogOutAsyncTask;
-import com.example.demointership.asyntask.NomalSearchAsyncTask;
-import com.example.demointership.listener.AdvanceSearchListener;
-import com.example.demointership.listener.GetASearchProfileListener;
+import com.example.demointership.adapter.HorizontalAdapter;
+import com.example.demointership.adapter.NomalListMapAdapter;
+import com.example.demointership.asynctask.LogOutAsyncTask;
+import com.example.demointership.asynctask.NomalSearchAsyncTask;
+import com.example.demointership.asynctask.RunMyDefaultSearchProfileAsyncTask;
 import com.example.demointership.listener.LogOutListener;
 import com.example.demointership.listener.NomalSearchListener;
+import com.example.demointership.listener.RunMyDefaultSearchProfileListener;
 import com.example.demointership.model.RestaurantsObject;
-import com.example.demointership.model.SearchProfileObject;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
@@ -65,7 +58,7 @@ import com.meetme.android.horizontallistview.HorizontalListView;
 @SuppressLint("NewApi")
 public class MapActivity extends Activity implements ConnectionCallbacks,
 		OnConnectionFailedListener, LogOutListener, NomalSearchListener,
-		OnMarkerClickListener, GetASearchProfileListener, AdvanceSearchListener {
+		OnMarkerClickListener, RunMyDefaultSearchProfileListener {
 	Button mBtMap, mBtList;
 	ImageButton mIbMysearch;
 	EditText mEtSearch;
@@ -136,19 +129,21 @@ public class MapActivity extends Activity implements ConnectionCallbacks,
 						@Override
 						public void onClick(View v) {
 							if (cbCheck.isChecked()) {
-								GetASearchProfileAsyncTask async = new GetASearchProfileAsyncTask(
+								RunMyDefaultSearchProfileAsyncTask async = new RunMyDefaultSearchProfileAsyncTask(
 										MapActivity.this, MapActivity.this);
 								String access_token = mSpLogin.getString(
 										"access_token", "");
-								int SearchProfilID = mSpLogin.getInt(
-										"search_profile_id", 0);
-								if (SearchProfilID == 0)
-									showToast("Not found SearchProfile");
-								else {
-									String id = String.valueOf(mSpLogin.getInt(
-											"search_profile_id", 0));
-									async.execute(access_token, id);
-								}
+								int id = mSpLogin
+										.getInt("search_profile_id", 0);
+								if (id == 0)
+									showToast("SearchProfile");
+								else
+									async.execute(access_token, String
+											.valueOf(mCurrentLocation
+													.getLatitude()), String
+											.valueOf(mCurrentLocation
+													.getLongitude()), String
+											.valueOf(id));
 								dialog.dismiss();
 							} else {
 								// ....
@@ -233,79 +228,6 @@ public class MapActivity extends Activity implements ConnectionCallbacks,
 
 	private void showToast(String st) {
 		Toast.makeText(getApplicationContext(), st, Toast.LENGTH_SHORT).show();
-	}
-
-	private class HorizontalAdapter extends ArrayAdapter<RestaurantsObject> {
-		private LayoutInflater mInflater;
-
-		public HorizontalAdapter(Context context, RestaurantsObject[] values) {
-			super(context, R.layout.item_horizontallistview, values);
-			mInflater = (LayoutInflater) getContext().getSystemService(
-					Context.LAYOUT_INFLATER_SERVICE);
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			Holder holder;
-			if (convertView == null) {
-				convertView = mInflater.inflate(
-						R.layout.item_horizontallistview, parent, false);
-
-				holder = new Holder();
-				holder.tvDistance = (TextView) convertView
-						.findViewById(R.id.itemhlv_tv_distance);
-				holder.ivLogo = (ImageView) convertView
-						.findViewById(R.id.itemhlv_iv_logo);
-				convertView.setTag(holder);
-			} else {
-				holder = (Holder) convertView.getTag();
-			}
-
-			holder.tvDistance.setText(String.valueOf(getItem(position)
-					.getDistance()));
-			holder.ivLogo.setImageBitmap(getItem(position).getImagelogo());
-			return convertView;
-		}
-
-		private class Holder {
-			public TextView tvDistance;
-			public ImageView ivLogo;
-		}
-
-	}
-
-	private class NomalListAdapter extends ArrayAdapter<RestaurantsObject> {
-		Activity mContext;
-		RestaurantsObject[] list;
-
-		public NomalListAdapter(Activity context, int re,
-				RestaurantsObject[] list) {
-			super(context, re, list);
-			this.mContext = context;
-			this.list = list;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			if (convertView == null) {
-				LayoutInflater inflater = mContext.getLayoutInflater();
-				convertView = inflater.inflate(R.layout.item_list, parent,
-						false);
-			}
-			RestaurantsObject item = list[position];
-			ImageView ivLogo = (ImageView) convertView
-					.findViewById(R.id.itemlist_iv_logo);
-			TextView tvName = (TextView) convertView
-					.findViewById(R.id.itemlist_tv_name);
-			TextView tvDistance = (TextView) convertView
-					.findViewById(R.id.itemlist_tv_distance);
-			tvName.setText(item.getName());
-
-			tvDistance.setText(String.valueOf(item.getDistance()));
-			ivLogo.setImageBitmap(item.getImagelogo());
-			return convertView;
-		}
-
 	}
 
 	@Override
@@ -403,7 +325,7 @@ public class MapActivity extends Activity implements ConnectionCallbacks,
 						this, mRestaurants);
 				mHlvItem.setAdapter(horizontaladapter);
 
-				NomalListAdapter listadapter = new NomalListAdapter(this,
+				NomalListMapAdapter listadapter = new NomalListMapAdapter(this,
 						R.layout.item_list, mRestaurants);
 				mLvListItem.setAdapter(listadapter);
 			}
@@ -438,36 +360,63 @@ public class MapActivity extends Activity implements ConnectionCallbacks,
 		return true;
 	}
 
+//	public void onGetASearchProfileListenerComplete() {
+//		AdvanceSeachAsyncTask async = new AdvanceSeachAsyncTask(this, this);
+//		String access_token = mSpLogin.getString("access_token", "");
+//		SearchProfileObject SearchProfile = Temp.defaultSearchProfileObject;
+//		async.execute(access_token,
+//				String.valueOf(mCurrentLocation.getLatitude()),
+//				String.valueOf(mCurrentLocation.getLongitude()),
+//				SearchProfile.getLocation_rating(),
+//				SearchProfile.getItem_price(),
+//				SearchProfile.getPoint_offered(),
+//				String.valueOf(SearchProfile.getRadius()),
+//				SearchProfile.getItem_type(), SearchProfile.getMenu_type(),
+//				SearchProfile.getKeyword(), SearchProfile.getServer_rating());
+//	}
+
+	// public void onAdvanceSearchListenerComplete() {
+	// mRestaurants = Temp.listRestaurantObject;
+	// if (mRestaurants != null)
+	// for (RestaurantsObject restaurant : mRestaurants) {
+	// LatLng ll = new LatLng(restaurant.getLat(),
+	// restaurant.getLong());
+	// mGoogleMap.addMarker(new MarkerOptions()
+	// .title(restaurant.getName())
+	// .snippet(restaurant.getAddress()).position(ll));
+	// HorizontalAdapter horizontaladapter = new HorizontalAdapter(
+	// this, mRestaurants);
+	// mHlvItem.setAdapter(horizontaladapter);
+	//
+	// NomalListMapAdapter listadapter = new NomalListMapAdapter(this,
+	// R.layout.item_list, mRestaurants);
+	// mLvListItem.setAdapter(listadapter);
+	// }
+	// }
+
+
 	@Override
-	public void onGetASearchProfileListenerComplete() {
-		AdvanceSeachAsyncTask async = new AdvanceSeachAsyncTask(this, this);
-		String access_token = mSpLogin.getString("access_token", "");
-		SearchProfileObject SearchProfile = Temp.defaultSearchProfileObject;
-		async.execute(access_token,
-				String.valueOf(mCurrentLocation.getLatitude()),
-				String.valueOf(mCurrentLocation.getLongitude()),
-				SearchProfile.getLocation_rating(),
-				SearchProfile.getItem_price(),
-				SearchProfile.getPoint_offered(),
-				String.valueOf(SearchProfile.getRadius()),
-				SearchProfile.getItem_type(), SearchProfile.getMenu_type(),
-				SearchProfile.getKeyword(), SearchProfile.getServer_rating());
+	public void onRunMyDefaultSearchProfileListenerComplete() {
+		mRestaurants = Temp.listRestaurantObject;
+		if (mRestaurants != null)
+			for (RestaurantsObject restaurant : mRestaurants) {
+				LatLng ll = new LatLng(restaurant.getLat(),
+						restaurant.getLong());
+				mGoogleMap.addMarker(new MarkerOptions()
+						.title(restaurant.getName())
+						.snippet(restaurant.getAddress()).position(ll));
+				HorizontalAdapter horizontaladapter = new HorizontalAdapter(
+						this, mRestaurants);
+				mHlvItem.setAdapter(horizontaladapter);
+
+				NomalListMapAdapter listadapter = new NomalListMapAdapter(this,
+						R.layout.item_list, mRestaurants);
+				mLvListItem.setAdapter(listadapter);
+			}
 	}
 
 	@Override
-	public void onGetASearchProfileListenerFailed() {
-
-	}
-
-	@Override
-	public void onAdvanceSearchListenerComplete() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onAdvanceSearchListenerFailed() {
-		// TODO Auto-generated method stub
+	public void onRunMyDefaultSearchProfileListenerFailed() {
 
 	}
 }
