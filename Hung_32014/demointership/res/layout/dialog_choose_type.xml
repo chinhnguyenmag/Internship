@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+   >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:id="@+id/dialog_choose_rl_top">
+        <TextView android:id="@+id/dialog_choose_tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="title"
+            android:textSize="25sp"
+            android:layout_alignParentLeft="true"/>
+
+    	<ImageButton
+    	    android:id="@+id/dialog_choose_ib_close"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentRight="true"
+    	    android:src="@drawable/ic_close_fc" />
+
+    </RelativeLayout>
+	<ListView android:id="@+id/dialog_choose_lv_list"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/dialog_choose_rl_top"
+	    android:layout_above="@+id/dialog_choose_bt_save"></ListView>
+	<Button android:id="@+id/dialog_choose_bt_save"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:text="save"/>
+</RelativeLayout>

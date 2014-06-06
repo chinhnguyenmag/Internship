@@ -201,6 +201,7 @@ public class LoginActivity extends Activity
 		String username = mSpLogin.getString("username", null);
 		if (access_token != null && username != null) {
 			startActivity(new Intent(this, MapActivity.class));
+			finish();
 		}
 		super.onResume();
 	}
@@ -370,7 +371,8 @@ public class LoginActivity extends Activity
 
 	@SuppressLint("NewApi")
 	public void forgotpassword() {
-		final Dialog dialog = new Dialog(LoginActivity.this);
+		final Dialog dialog = new Dialog(LoginActivity.this,
+				R.style.CustomDialogThemeNoTitle);
 		dialog.setContentView(R.layout.dialog_forgotpassword);
 		Button submitBtnDialog = (Button) dialog
 				.findViewById(R.id.forgot_bt_submit);
@@ -492,14 +494,15 @@ public class LoginActivity extends Activity
 
 	@Override
 	public void onLoginSocialListenerComplete() {
-		startActivity(new Intent(this, MapActivity.class));
+		startActivity(new Intent(LoginActivity.this, MapActivity.class));
 		finish();
 	}
 
 	@Override
 	public void onLoginSocialListenerFailed() {
 		String username = mSpLogin.getString("username", "");
-		final Dialog dialog = new Dialog(LoginActivity.this);
+		final Dialog dialog = new Dialog(LoginActivity.this,
+				R.style.CustomDialogThemeNoTitle);
 		dialog.setContentView(R.layout.dialog_sociallogin);
 
 		Button submitBtn = (Button) dialog
@@ -526,12 +529,12 @@ public class LoginActivity extends Activity
 				async.execute(uid, provider, email, username, "123456", "", "");
 			}
 		});
-
+		dialog.show();
 	}
 
 	@Override
 	public void onRegisterSocialListenerComplete() {
-		startActivity(new Intent(this, MapActivity.class));
+		startActivity(new Intent(LoginActivity.this, MapActivity.class));
 		finish();
 	}
 

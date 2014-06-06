@@ -2,6 +2,7 @@ package com.example.demointership.Util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -157,4 +158,18 @@ public class Utils {
 			result = true;
 		return result;
 	}
+	/**
+	 * Round float
+	 * 
+	 * @param d
+	 * @param decimalPlace 
+	 * 		number
+	 *
+	 *
+	 */
+	 public static float round(float d, int decimalPlace) {
+		BigDecimal bd = new BigDecimal(Float.toString(d));
+	        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+	        return bd.floatValue();
+	    }
 }

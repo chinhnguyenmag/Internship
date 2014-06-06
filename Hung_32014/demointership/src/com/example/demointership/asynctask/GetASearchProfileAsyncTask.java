@@ -2,9 +2,6 @@ package com.example.demointership.asynctask;
 
 import java.lang.ref.WeakReference;
 
-import org.apache.http.entity.StringEntity;
-import org.json.JSONObject;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -16,33 +13,34 @@ import com.example.demointership.listener.GetASearchProfileListener;
 import com.example.demointership.model.SearchProfileObject;
 import com.google.gson.Gson;
 
-public class GetASearchProfileAsyncTask extends AsyncTask<String, Void, Boolean>{
+public class GetASearchProfileAsyncTask extends
+		AsyncTask<String, Void, Boolean> {
 	WeakReference<Context> mContext;
 	WeakReference<GetASearchProfileListener> mListener;
 	ProgressDialog mDialog;
-	public GetASearchProfileAsyncTask(Context context, GetASearchProfileListener listener) {
+
+	public GetASearchProfileAsyncTask(Context context,
+			GetASearchProfileListener listener) {
 		this.mContext = new WeakReference<Context>(context);
 		this.mListener = new WeakReference<GetASearchProfileListener>(listener);
 	}
-	
+
 	@Override
 	protected Boolean doInBackground(String... params) {
 		boolean result = true;
 		try {
-			JSONObject jObject = new JSONObject();
-			jObject.put("access_token"	, params[0]);
-			jObject.put("search_profile_id"	, Integer.parseInt(params[1]));
-			StringEntity stringEntity = new StringEntity(jObject.toString(),
-					"UTF-8");
-			SearchProfileObject response = new Gson().fromJson(Server.getJSON(Server
-					.requestPost(ServerURL.URL + ServerURL.getKeyGetASearchprofile(),
-							stringEntity)), SearchProfileObject.class);
+			SearchProfileObject response = new Gson().fromJson(
+					Server.getJSON(Server.requestGet(ServerURL.URL
+							+ ServerURL.getKeyGetASearchprofile()
+							+ "access_token=" + params[0]
+							+ "&search_profile_id=" + params[1])),
+					SearchProfileObject.class);
 			if (!response.getStatus().equals("failed")) {
 				Temp.defaultSearchProfileObject = response;
 			} else {
 				result = false;
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			result = false;
 		}
 		return result;

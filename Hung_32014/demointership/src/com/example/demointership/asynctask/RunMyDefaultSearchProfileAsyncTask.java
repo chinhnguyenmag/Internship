@@ -2,9 +2,6 @@ package com.example.demointership.asynctask;
 
 import java.lang.ref.WeakReference;
 
-import org.apache.http.entity.StringEntity;
-import org.json.JSONObject;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -33,18 +30,13 @@ public class RunMyDefaultSearchProfileAsyncTask extends
 	protected Boolean doInBackground(String... params) {
 		boolean result = true;
 		try {
-			JSONObject jObject = new JSONObject();
-			jObject.put("access_token", params[0]);
-			jObject.put("latitude", Float.parseFloat(params[1]));
-			jObject.put("longitude", Float.parseFloat(params[2]));
-			jObject.put("search_profile_id", Integer.parseInt(params[3]));
-			StringEntity stringEntity = new StringEntity(jObject.toString(),
-					"UTF-8");
-			RestaurantsObject[] response = new Gson().fromJson(Server
-					.getJSON(Server.requestPost(
-							ServerURL.URL
-									+ ServerURL.getKeyRunMyDefaultsearch(),
-							stringEntity)), RestaurantsObject[].class);
+			RestaurantsObject[] response = new Gson().fromJson(
+					Server.getJSON(Server.requestGet(ServerURL.URL
+							+ ServerURL.getKeyRunMyDefaultsearch()
+							+ "access_token=" + params[0] + "&latitude="
+							+ params[1] + "&longitude=" + params[2]
+							+ "&search_profile_id=" + params[3])),
+					RestaurantsObject[].class);
 			if (response != null) {
 				Temp.listRestaurantObject = response;
 			} else {

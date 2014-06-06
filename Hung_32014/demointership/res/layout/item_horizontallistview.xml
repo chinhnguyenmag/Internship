@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/itemhlv_iv_logo"
-        android:layout_width="90sp"
-        android:layout_height="90sp"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:src="@drawable/bg_black_radius_color_selector" />

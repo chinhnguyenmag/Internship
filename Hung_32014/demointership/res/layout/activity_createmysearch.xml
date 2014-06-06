@@ -16,25 +16,243 @@
                 android:id="@+id/createmysearch_iv_icon"
                 android:layout_width="40sp"
                 android:layout_height="40sp"
-                android:src="@drawable/icon_mm" 
-                android:layout_alignParentLeft="true"/>
+                android:layout_alignParentLeft="true"
+                android:src="@drawable/icon_mm" />
 
             <TextView
-               	android:layout_width="wrap_content"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/createmysearch_iv_icon" 
-                android:text="zzzzzzzzzz"/>
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="@string/createmysearch_tv_title" />
         </RelativeLayout>
-        <EditText android:id="@+id/createmysearch_et_key"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-         <com.edmodo.rangebar.RangeBar
-            xmlns:custom="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/rangebar1"
+
+        <EditText
+            android:id="@+id/createmysearch_et_key"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="viewStart"
-            />
+            android:hint="@string/createmysearch_et_key_hint" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/createmysearch_tv_menu_item_price" />
+
+        <com.edmodo.rangebar.RangeBar
+            xmlns:custom="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/createmysearch_rb_item_price"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            custom:tickCount="100" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/createmysearch_tv_item_price_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="left" />
+
+            <TextView
+                android:id="@+id/createmysearch_tv_item_price_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="right" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/createmysearch_tv_menu_item_rating" />
+
+        <com.edmodo.rangebar.RangeBar
+            xmlns:custom="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/createmysearch_rb_item_rating"
+            android:layout_width="match_parent"
+             android:layout_height="40dp"
+            custom:tickCount="13" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/createmysearch_tv_item_rating_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="left" />
+
+            <TextView
+                android:id="@+id/createmysearch_tv_item_rating_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="right" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/createmysearch_tv_server_rating" />
+
+        <com.edmodo.rangebar.RangeBar
+            xmlns:custom="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/createmysearch_rb_server_rating"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            custom:tickCount="13" />
+		<RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/createmysearch_tv_server_rating_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="left" />
+
+            <TextView
+                android:id="@+id/createmysearch_tv_server_rating_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="right" />
+        </RelativeLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/createmysearch_tv_distance" />
+
+        <com.edmodo.rangebar.RangeBar
+            xmlns:custom="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/createmysearch_rb_distance"
+            android:layout_width="match_parent"
+             android:layout_height="40dp"
+            custom:tickCount="100" />
+		<RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/createmysearch_tv_distance_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="left" />
+
+            <TextView
+                android:id="@+id/createmysearch_tv_distance_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="right" />
+        </RelativeLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/createmysearch_tv_points_offered" />
+
+        <com.edmodo.rangebar.RangeBar
+            xmlns:custom="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/createmysearch_rb_point_offred"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            custom:tickCount="100" />
+		<RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/createmysearch_tv_point_offred_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="left" />
+
+            <TextView
+                android:id="@+id/createmysearch_tv_point_offred_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="right" />
+        </RelativeLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/createmysearch_tv_restaurant_rating" />
+
+        <com.edmodo.rangebar.RangeBar
+            xmlns:custom="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/createmysearch_rb_restaurant_rating"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            custom:tickCount="13" />
+		<RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/createmysearch_tv_restaurant_rating_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="left" />
+
+            <TextView
+                android:id="@+id/createmysearch_tv_restaurant_rating_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="right" />
+        </RelativeLayout>
+        <Button
+            android:id="@+id/createmysearch_bt_menu_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onClicks" />
+
+        <Button
+            android:id="@+id/createmysearch_bt_food_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="abcccc" 
+            android:onClick="onClicks"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/createmysearch_bt_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:onClick="onClicks"
+                android:text="@string/createmysearch_bt_save" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1.0" >
+
+            <Button
+                android:id="@+id/createmysearch_bt_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".5"
+                android:onClick="onClicks"
+                android:text="@string/createmysearch_bt_search" />
+
+            <Button
+                android:id="@+id/createmysearch_bt_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".5"
+                android:onClick="onClicks"
+                android:text="@string/createmysearch_bt_cancel" />
+        </LinearLayout>
     </LinearLayout>
 
 </ScrollView>

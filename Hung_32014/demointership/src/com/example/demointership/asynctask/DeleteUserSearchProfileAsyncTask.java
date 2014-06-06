@@ -38,7 +38,7 @@ public class DeleteUserSearchProfileAsyncTask extends
 			StringEntity stringEntity = new StringEntity(jObject.toString(),
 					"UTF-8");
 			ResponseObject response = new Gson().fromJson(Server.getJSON(Server
-					.requestPost(ServerURL.URL + ServerURL.getKeyForgot(),
+					.requestPost(ServerURL.URL + ServerURL.getKeyGetDeletesearchprofile(),
 							stringEntity)), ResponseObject.class);
 			if (response.getStatus().equals("success")) {
 

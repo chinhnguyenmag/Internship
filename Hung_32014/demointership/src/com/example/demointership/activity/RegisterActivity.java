@@ -36,7 +36,6 @@ public class RegisterActivity extends Activity implements RegisterNomalListener 
 	public void onBackPressed() {
 		setResult(RESULT_CANCELED);
 		finish();
-//		super.onBackPressed();
 	}
 
 	@Override
@@ -87,7 +86,8 @@ public class RegisterActivity extends Activity implements RegisterNomalListener 
 				if (!password.equals(confirmpassword)) {
 					showToast("Password and Confirm Password are not correct !");
 				} else {
-					RegisterNomalAsyncTask async = new RegisterNomalAsyncTask(this, this);
+					RegisterNomalAsyncTask async = new RegisterNomalAsyncTask(
+							this, this);
 					async.execute(username, email, password, firstname,
 							lastname, zipcode);
 				}
@@ -102,7 +102,8 @@ public class RegisterActivity extends Activity implements RegisterNomalListener 
 	}
 
 	private void setAvatar() {
-		final Dialog dialog = new Dialog(RegisterActivity.this);
+		final Dialog dialog = new Dialog(RegisterActivity.this,
+				R.style.CustomDialogThemeNoTitle);
 		dialog.setContentView(R.layout.dialog_getavatar);
 		Button btCancel = (Button) dialog.findViewById(R.id.avatar_cancel);
 		Button btChoose = (Button) dialog.findViewById(R.id.avatar_chooseimage);
@@ -225,11 +226,10 @@ public class RegisterActivity extends Activity implements RegisterNomalListener 
 
 	@Override
 	public void onRegisterNomalListenerFailed() {
-		SharedPreferences SpLogin = getSharedPreferences(
-				"CurrentUser", 0);
+		SharedPreferences SpLogin = getSharedPreferences("CurrentUser", 0);
 		String st = SpLogin.getString("errors", "");
 		showToast(st);
-		Editor editor= SpLogin.edit();
+		Editor editor = SpLogin.edit();
 		editor.remove("id");
 		editor.remove("username");
 		editor.remove("email");
@@ -242,7 +242,7 @@ public class RegisterActivity extends Activity implements RegisterNomalListener 
 		editor.remove("point");
 		editor.remove("dinner_status");
 		editor.commit();
-		
+
 	}
 
 }

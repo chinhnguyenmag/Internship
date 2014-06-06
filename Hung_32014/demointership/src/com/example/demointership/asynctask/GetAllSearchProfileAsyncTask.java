@@ -2,9 +2,6 @@ package com.example.demointership.asynctask;
 
 import java.lang.ref.WeakReference;
 
-import org.apache.http.entity.StringEntity;
-import org.json.JSONObject;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -33,15 +30,11 @@ public class GetAllSearchProfileAsyncTask extends
 	protected Boolean doInBackground(String... params) {
 		boolean result = true;
 		try {
-			JSONObject jObject = new JSONObject();
-			jObject.put("access_token", params[0]);
-			StringEntity stringEntity = new StringEntity(jObject.toString(),
-					"UTF-8");
-			SearchProfileObject[] response = new Gson().fromJson(Server
-					.getJSON(Server.requestPost(
-							ServerURL.URL
-									+ ServerURL.getKeyGetAllsearchprofile(),
-							stringEntity)), SearchProfileObject[].class);
+			SearchProfileObject[] response = new Gson().fromJson(
+					Server.getJSON(Server.requestGet(ServerURL.URL
+							+ ServerURL.getKeyGetAllsearchprofile()
+							+ "access_token=" + params[0])),
+					SearchProfileObject[].class);
 			if (response != null) {
 				Temp.listSearchProfileObject = response;
 			} else {

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <CheckBox
+        android:id="@+id/item_createmysearch_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:gravity="right|end" />
+
+    <TextView
+        android:id="@+id/item_createmysearch_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/item_createmysearch_check"
+        android:layout_alignBottom="@+id/item_createmysearch_check"
+        android:text="zzzzzz" />
+
+    <TextView
+        android:id="@+id/item_createmysearch_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="iddd"
+        android:visibility="invisible" />
+
+</RelativeLayout>

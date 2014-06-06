@@ -1,7 +1,7 @@
 package com.example.demointership.adapter;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
@@ -21,15 +21,15 @@ import com.example.demointership.model.SearchProfileObject;
 
 public class SearchProfileAdapter extends ArrayAdapter<SearchProfileObject> {
 	LayoutInflater mInflater;
-	Context mContext;
 	DeleteUserSearchProfileListener mListener;
+	Activity mActivity;
 
-	public SearchProfileAdapter(Context context, int resource,
+	public SearchProfileAdapter(Activity activity, int resource,
 			SearchProfileObject[] list, DeleteUserSearchProfileListener listener) {
-		super(context, R.layout.item_mysearch, list);
-		mInflater = LayoutInflater.from(context);
-		this.mContext = context;
+		super(activity, R.layout.item_mysearch, list);
+		mInflater = LayoutInflater.from(activity);
 		this.mListener = listener;
+		this.mActivity = activity;
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class SearchProfileAdapter extends ArrayAdapter<SearchProfileObject> {
 				@Override
 				public void onClick(View v) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(
-							mContext);
+							mActivity);
 					builder.setMessage("are you sure to delete this profile? ");
 					builder.setPositiveButton("YES",
 							new DialogInterface.OnClickListener() {
@@ -60,8 +60,8 @@ public class SearchProfileAdapter extends ArrayAdapter<SearchProfileObject> {
 								public void onClick(DialogInterface dialog,
 										int which) {
 									DeleteUserSearchProfileAsyncTask async = new DeleteUserSearchProfileAsyncTask(
-											mContext, mListener);
-									SharedPreferences sp = mContext
+											mActivity, mListener);
+									SharedPreferences sp = mActivity
 											.getSharedPreferences(
 													Constants.KEY_CURRENT_USER_XML,
 													0);
@@ -93,6 +93,7 @@ public class SearchProfileAdapter extends ArrayAdapter<SearchProfileObject> {
 
 				}
 			});
+			convertView.setTag(holder);
 		} else {
 			holder = (Holder) convertView.getTag();
 		}

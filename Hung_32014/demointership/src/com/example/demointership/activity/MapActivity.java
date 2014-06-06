@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.w3c.dom.Document;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -15,11 +14,11 @@ import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -30,6 +29,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.demointership.R;
+import com.example.demointership.Util.Constants;
 import com.example.demointership.Util.GMapV2Direction;
 import com.example.demointership.Util.Temp;
 import com.example.demointership.adapter.HorizontalAdapter;
@@ -48,7 +48,7 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
-import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -56,9 +56,10 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.meetme.android.horizontallistview.HorizontalListView;
 
 @SuppressLint("NewApi")
-public class MapActivity extends Activity implements ConnectionCallbacks,
-		OnConnectionFailedListener, LogOutListener, NomalSearchListener,
-		OnMarkerClickListener, RunMyDefaultSearchProfileListener {
+public class MapActivity extends FragmentActivity implements
+		ConnectionCallbacks, OnConnectionFailedListener, LogOutListener,
+		NomalSearchListener, OnMarkerClickListener,
+		RunMyDefaultSearchProfileListener {
 	Button mBtMap, mBtList;
 	ImageButton mIbMysearch;
 	EditText mEtSearch;
@@ -70,7 +71,6 @@ public class MapActivity extends Activity implements ConnectionCallbacks,
 	LocationClient mLocationClient;
 	SharedPreferences mSpLogin;
 	RestaurantsObject[] mRestaurants;
-	RestaurantsObject[] mRestaurantsSearch;
 	Location mCurrentLocation;
 
 	@Override
@@ -78,7 +78,7 @@ public class MapActivity extends Activity implements ConnectionCallbacks,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
 
-		mSpLogin = getSharedPreferences("CurrentUser", 0);
+		mSpLogin = getSharedPreferences(Constants.KEY_CURRENT_USER_XML, 0);
 		mBtMap = (Button) findViewById(R.id.map_bt_map);
 		mBtList = (Button) findViewById(R.id.map_bt_list);
 		mEtSearch = (EditText) findViewById(R.id.map_et_search);
@@ -88,7 +88,7 @@ public class MapActivity extends Activity implements ConnectionCallbacks,
 		mRlMap = (RelativeLayout) findViewById(R.id.map_ll_viewmap);
 		if (mGoogleMap == null) {
 			try {
-				mGoogleMap = ((MapFragment) getFragmentManager()
+				mGoogleMap = ((SupportMapFragment) getSupportFragmentManager()
 						.findFragmentById(R.id.map_gm_map)).getMap();
 				mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 				mGoogleMap.setMyLocationEnabled(true);
@@ -101,75 +101,74 @@ public class MapActivity extends Activity implements ConnectionCallbacks,
 		mGoogleMap.setOnMarkerClickListener(this);
 		mBtList.requestFocus();
 		mEtSearch.clearFocus();
-		mEtSearch.setOnFocusChangeListener(new OnFocusChangeListener() {
+		mEtSearch.setOnClickListener(new OnClickListener() {
 
 			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-				if (hasFocus) {
-					final Dialog dialog = new Dialog(MapActivity.this);
-					dialog.setContentView(R.layout.dialog_nomalsearch);
-					final CheckBox cbCheck = (CheckBox) dialog
-							.findViewById(R.id.nomalsearch_cb_check);
-					Button btnSubmit = (Button) dialog
-							.findViewById(R.id.nomalsearch_bt_submit);
-					Button btnCancel = (Button) dialog
-							.findViewById(R.id.nomalsearch_bt_cancel);
-					EditText etSearch = (EditText) dialog
-							.findViewById(R.id.nomalsearch_et_search);
-					final String key = etSearch.getText().toString();
-					btnCancel.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				final Dialog dialog = new Dialog(MapActivity.this,
+						R.style.CustomDialogThemeNoTitle);
+				dialog.setContentView(R.layout.dialog_nomalsearch);
+				final CheckBox cbCheck = (CheckBox) dialog
+						.findViewById(R.id.nomalsearch_cb_check);
+				Button btnSubmit = (Button) dialog
+						.findViewById(R.id.nomalsearch_bt_submit);
+				Button btnCancel = (Button) dialog
+						.findViewById(R.id.nomalsearch_bt_cancel);
+				EditText etSearch = (EditText) dialog
+						.findViewById(R.id.nomalsearch_et_search);
+				final String key = etSearch.getText().toString();
+				btnCancel.setOnClickListener(new OnClickListener() {
 
-						@Override
-						public void onClick(View arg0) {
+					@Override
+					public void onClick(View arg0) {
+						dialog.dismiss();
+					}
+				});
+				btnSubmit.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						if (cbCheck.isChecked()) {
+							RunMyDefaultSearchProfileAsyncTask async = new RunMyDefaultSearchProfileAsyncTask(
+									MapActivity.this, MapActivity.this);
+							String access_token = mSpLogin.getString(
+									"access_token", "");
+							int id = mSpLogin.getInt("search_profile_id", 0);
+							if (id == 0)
+								showToast("....");
+							else
+								async.execute(access_token,
+										String.valueOf(mCurrentLocation
+												.getLatitude()), String
+												.valueOf(mCurrentLocation
+														.getLongitude()),
+										String.valueOf(id));
 							dialog.dismiss();
-						}
-					});
-					btnSubmit.setOnClickListener(new OnClickListener() {
-
-						@Override
-						public void onClick(View v) {
-							if (cbCheck.isChecked()) {
-								RunMyDefaultSearchProfileAsyncTask async = new RunMyDefaultSearchProfileAsyncTask(
+						} else {
+							// ....
+							if (mLocationClient.isConnected()) {
+								Location location = mLocationClient
+										.getLastLocation();
+								NomalSearchAsyncTask async = new NomalSearchAsyncTask(
 										MapActivity.this, MapActivity.this);
 								String access_token = mSpLogin.getString(
 										"access_token", "");
-								int id = mSpLogin
-										.getInt("search_profile_id", 0);
-								if (id == 0)
-									showToast("SearchProfile");
-								else
-									async.execute(access_token, String
-											.valueOf(mCurrentLocation
-													.getLatitude()), String
-											.valueOf(mCurrentLocation
-													.getLongitude()), String
-											.valueOf(id));
-								dialog.dismiss();
-							} else {
-								// ....
-								if (mLocationClient.isConnected()) {
-									Location location = mLocationClient
-											.getLastLocation();
-									NomalSearchAsyncTask async = new NomalSearchAsyncTask(
-											MapActivity.this, MapActivity.this);
-									String access_token = mSpLogin.getString(
-											"access_token", "");
-									async.execute(access_token, String
-											.valueOf(location.getLatitude()),
-											String.valueOf(location
-													.getLongitude()), key);
+								async.execute(
+										access_token,
+										String.valueOf(location.getLatitude()),
+										String.valueOf(location.getLongitude()),
+										key, "");
 
-								}
 							}
 						}
-					});
+						dialog.dismiss();
+					}
+				});
 
-					dialog.show();
+				dialog.show();
 
-				}
 			}
 		});
-
 	}
 
 	@Override
@@ -204,7 +203,6 @@ public class MapActivity extends Activity implements ConnectionCallbacks,
 
 		case R.id.map_ib_mysearch:
 			startActivity(new Intent(MapActivity.this, MySearchActivity.class));
-			finish();
 
 			break;
 		}
@@ -221,7 +219,7 @@ public class MapActivity extends Activity implements ConnectionCallbacks,
 			String access_token = mSpLogin.getString("access_token", "");
 			NomalSearchAsyncTask async = new NomalSearchAsyncTask(this, this);
 			async.execute(access_token, String.valueOf(location.getLatitude()),
-					String.valueOf(location.getLongitude()), "");
+					String.valueOf(location.getLongitude()), "", "");
 
 		}
 	}
@@ -260,7 +258,8 @@ public class MapActivity extends Activity implements ConnectionCallbacks,
 
 	@Override
 	public void onBackPressed() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		AlertDialog.Builder builder = new AlertDialog.Builder(this,
+				R.style.CustomDialogThemeNoTitle);
 		builder.setMessage("Exit Application ?");
 		builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
@@ -314,21 +313,21 @@ public class MapActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	public void onNomalSearchListenerComplete() {
 		mRestaurants = Temp.listRestaurantObject;
-		if (mRestaurants != null)
-			for (RestaurantsObject restaurant : mRestaurants) {
-				LatLng ll = new LatLng(restaurant.getLat(),
-						restaurant.getLong());
-				mGoogleMap.addMarker(new MarkerOptions()
-						.title(restaurant.getName())
-						.snippet(restaurant.getAddress()).position(ll));
-				HorizontalAdapter horizontaladapter = new HorizontalAdapter(
-						this, mRestaurants);
-				mHlvItem.setAdapter(horizontaladapter);
+		// if (mRestaurants != null)
+		for (RestaurantsObject restaurant : mRestaurants) {
+			LatLng ll = new LatLng(restaurant.getLat(), restaurant.getLong());
+			// mGoogleMap.clear();
+			mGoogleMap.addMarker(new MarkerOptions()
+					.title(restaurant.getName())
+					.snippet(restaurant.getAddress()).position(ll));
+			HorizontalAdapter horizontaladapter = new HorizontalAdapter(this,
+					mRestaurants);
+			mHlvItem.setAdapter(horizontaladapter);
 
-				NomalListMapAdapter listadapter = new NomalListMapAdapter(this,
-						R.layout.item_list, mRestaurants);
-				mLvListItem.setAdapter(listadapter);
-			}
+			NomalListMapAdapter listadapter = new NomalListMapAdapter(this,
+					R.layout.item_list, mRestaurants);
+			mLvListItem.setAdapter(listadapter);
+		}
 	}
 
 	@Override
@@ -357,23 +356,24 @@ public class MapActivity extends Activity implements ConnectionCallbacks,
 					.snippet(restaurant.getAddress()).position(ll));
 		}
 		mGoogleMap.addPolyline(rectLine);
-		return true;
+		marker.showInfoWindow();
+		return false;
 	}
 
-//	public void onGetASearchProfileListenerComplete() {
-//		AdvanceSeachAsyncTask async = new AdvanceSeachAsyncTask(this, this);
-//		String access_token = mSpLogin.getString("access_token", "");
-//		SearchProfileObject SearchProfile = Temp.defaultSearchProfileObject;
-//		async.execute(access_token,
-//				String.valueOf(mCurrentLocation.getLatitude()),
-//				String.valueOf(mCurrentLocation.getLongitude()),
-//				SearchProfile.getLocation_rating(),
-//				SearchProfile.getItem_price(),
-//				SearchProfile.getPoint_offered(),
-//				String.valueOf(SearchProfile.getRadius()),
-//				SearchProfile.getItem_type(), SearchProfile.getMenu_type(),
-//				SearchProfile.getKeyword(), SearchProfile.getServer_rating());
-//	}
+	// public void onGetASearchProfileListenerComplete() {
+	// AdvanceSeachAsyncTask async = new AdvanceSeachAsyncTask(this, this);
+	// String access_token = mSpLogin.getString("access_token", "");
+	// SearchProfileObject SearchProfile = Temp.defaultSearchProfileObject;
+	// async.execute(access_token,
+	// String.valueOf(mCurrentLocation.getLatitude()),
+	// String.valueOf(mCurrentLocation.getLongitude()),
+	// SearchProfile.getLocation_rating(),
+	// SearchProfile.getItem_price(),
+	// SearchProfile.getPoint_offered(),
+	// String.valueOf(SearchProfile.getRadius()),
+	// SearchProfile.getItem_type(), SearchProfile.getMenu_type(),
+	// SearchProfile.getKeyword(), SearchProfile.getServer_rating());
+	// }
 
 	// public void onAdvanceSearchListenerComplete() {
 	// mRestaurants = Temp.listRestaurantObject;
@@ -393,7 +393,6 @@ public class MapActivity extends Activity implements ConnectionCallbacks,
 	// mLvListItem.setAdapter(listadapter);
 	// }
 	// }
-
 
 	@Override
 	public void onRunMyDefaultSearchProfileListenerComplete() {

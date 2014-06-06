@@ -45,7 +45,7 @@ public class LoginSocialAsyncTask extends AsyncTask<String, Void, Boolean> {
 			StringEntity stringEntity = new StringEntity(jObject.toString(),
 					"UTF-8");
 			ResponseObject response = new Gson().fromJson(Server.getJSON(Server
-					.requestPost(ServerURL.URL + ServerURL.getKeyLoginNormal(),
+					.requestPost(ServerURL.URL + ServerURL.getKeyLoginSocial(),
 							stringEntity)), ResponseObject.class);
 			if (response.getStatus().equals("success")) {
 				SharedPreferences sp = mContext.get().getSharedPreferences(

@@ -35,6 +35,10 @@ public class UserProfileObject {
 	private String userPhotoImageURL;
 	@SerializedName("defaultsearchprofile")
 	private int defaultsearchprofile;
+	@SerializedName("default_search_profile")
+	private SearchProfileObject[] listSearchProfileObject;
+	@SerializedName("is_register_levelup")
+	private int is_register_levelup;
 
 	public int getId() {
 		return id;
@@ -162,6 +166,23 @@ public class UserProfileObject {
 
 	public void setErrors(ErrorsObject errors) {
 		this.errors = errors;
+	}
+
+	public SearchProfileObject[] getListSearchProfileObject() {
+		return listSearchProfileObject;
+	}
+
+	public void setListSearchProfileObject(
+			SearchProfileObject[] listSearchProfileObject) {
+		this.listSearchProfileObject = listSearchProfileObject;
+	}
+
+	public int getIs_register_levelup() {
+		return is_register_levelup;
+	}
+
+	public void setIs_register_levelup(int is_register_levelup) {
+		this.is_register_levelup = is_register_levelup;
 	}
 
 }
