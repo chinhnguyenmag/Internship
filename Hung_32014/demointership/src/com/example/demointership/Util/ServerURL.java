@@ -20,9 +20,9 @@ public class ServerURL {
 	private static final String KEY_ITEM = "/items/";
 	private static final String KEY_MY_POINT = "/points/";
 	private static final String KEY_GET_ALLSEARCHPROFILE = "/users/searchprofile.json?";
-	private static final String KEY_GET_A_SEARCHPROFILE = "users/get searchprofile.json?";
+	private static final String KEY_GET_A_SEARCHPROFILE = "users/getsearchprofile.json?";
 	private static final String KEY_RUN_MY_DEFAULTSEARCH = "/locations/run_default.json?";
-	private static final String KEY_ADD_SEARCHPROFILE ="/users/addsearchprofile";
+	private static final String KEY_ADD_SEARCHPROFILE ="/users/addsearchprofile.json?";
 	
 	public static String getKeyAddSearchprofile() {
 		return KEY_ADD_SEARCHPROFILE;

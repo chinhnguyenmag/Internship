@@ -12,8 +12,6 @@ public class RestaurantsObject {
 	private String status;
 	@SerializedName("error")
 	private String error;
-	// @SerializedName("id")
-	// private int idmymenu;
 	@SerializedName("id")
 	private String id;
 	@SerializedName("name")
@@ -88,7 +86,6 @@ public class RestaurantsObject {
 	}
 
 	public String getId() {
-
 		return id;
 	}
 

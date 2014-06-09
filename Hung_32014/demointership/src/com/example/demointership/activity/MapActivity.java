@@ -19,13 +19,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.demointership.R;
@@ -59,7 +63,7 @@ import com.meetme.android.horizontallistview.HorizontalListView;
 public class MapActivity extends FragmentActivity implements
 		ConnectionCallbacks, OnConnectionFailedListener, LogOutListener,
 		NomalSearchListener, OnMarkerClickListener,
-		RunMyDefaultSearchProfileListener {
+		RunMyDefaultSearchProfileListener, OnItemClickListener {
 	Button mBtMap, mBtList;
 	ImageButton mIbMysearch;
 	EditText mEtSearch;
@@ -72,6 +76,7 @@ public class MapActivity extends FragmentActivity implements
 	SharedPreferences mSpLogin;
 	RestaurantsObject[] mRestaurants;
 	Location mCurrentLocation;
+	final int MYSEARCH = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -169,6 +174,8 @@ public class MapActivity extends FragmentActivity implements
 
 			}
 		});
+		mHlvItem.setOnItemClickListener(this);
+		mLvListItem.setOnItemClickListener(this);
 	}
 
 	@Override
@@ -202,7 +209,8 @@ public class MapActivity extends FragmentActivity implements
 			break;
 
 		case R.id.map_ib_mysearch:
-			startActivity(new Intent(MapActivity.this, MySearchActivity.class));
+			startActivityForResult(new Intent(MapActivity.this,
+					MySearchActivity.class), MYSEARCH);
 
 			break;
 		}
@@ -243,6 +251,41 @@ public class MapActivity extends FragmentActivity implements
 	protected void onResume() {
 		super.onResume();
 
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode,
+			Intent intent) {
+		super.onActivityResult(requestCode, resultCode, intent);
+		if (requestCode == MYSEARCH) {
+			/**
+			 * RESULT_OK AdvanceSearch complete, fill result to list.
+			 */
+			if (resultCode == RESULT_OK) {
+				mRestaurants = Temp.listRestaurantObject;
+				// if (mRestaurants != null)
+				for (RestaurantsObject restaurant : mRestaurants) {
+					LatLng ll = new LatLng(restaurant.getLat(),
+							restaurant.getLong());
+					// mGoogleMap.clear();
+					mGoogleMap.addMarker(new MarkerOptions()
+							.title(restaurant.getName())
+							.snippet(restaurant.getAddress()).position(ll));
+				}
+				HorizontalAdapter horizontaladapter = new HorizontalAdapter(
+						this, mRestaurants);
+				mHlvItem.setAdapter(horizontaladapter);
+
+				NomalListMapAdapter listadapter = new NomalListMapAdapter(this,
+						R.layout.item_list, mRestaurants);
+				mLvListItem.setAdapter(listadapter);
+			} else if (resultCode == RESULT_CANCELED) {
+				/**
+				 * RESULT_CANCELED just create
+				 */
+
+			}
+		}
 	}
 
 	@Override
@@ -316,18 +359,17 @@ public class MapActivity extends FragmentActivity implements
 		// if (mRestaurants != null)
 		for (RestaurantsObject restaurant : mRestaurants) {
 			LatLng ll = new LatLng(restaurant.getLat(), restaurant.getLong());
-			// mGoogleMap.clear();
 			mGoogleMap.addMarker(new MarkerOptions()
 					.title(restaurant.getName())
 					.snippet(restaurant.getAddress()).position(ll));
-			HorizontalAdapter horizontaladapter = new HorizontalAdapter(this,
-					mRestaurants);
-			mHlvItem.setAdapter(horizontaladapter);
-
-			NomalListMapAdapter listadapter = new NomalListMapAdapter(this,
-					R.layout.item_list, mRestaurants);
-			mLvListItem.setAdapter(listadapter);
 		}
+		HorizontalAdapter horizontaladapter = new HorizontalAdapter(this,
+				mRestaurants);
+		mHlvItem.setAdapter(horizontaladapter);
+
+		NomalListMapAdapter listadapter = new NomalListMapAdapter(this,
+				R.layout.item_list, mRestaurants);
+		mLvListItem.setAdapter(listadapter);
 	}
 
 	@Override
@@ -417,5 +459,29 @@ public class MapActivity extends FragmentActivity implements
 	@Override
 	public void onRunMyDefaultSearchProfileListenerFailed() {
 
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+			long id) {
+		final Dialog dialog = new Dialog(MapActivity.this,
+				R.style.CustomDialogThemeNoTitle);
+		dialog.setContentView(R.layout.dialog_restaurant_detail);
+		TextView tvName = (TextView) dialog
+				.findViewById(R.id.dialog_restaurant_detail_tv_name);
+		ImageView ivLogo = (ImageView) dialog
+				.findViewById(R.id.dialog_restaurant_detail_iv_logo);
+		Button btCancel = (Button)dialog.findViewById(R.id.dialog_restaurant_detail_bt_cancel);
+		tvName.setText("" + mRestaurants[position].getName());
+		ivLogo.setImageBitmap(mRestaurants[position].getImagelogo());
+		btCancel.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+		dialog.show();
+		showToast("" + mRestaurants[position].getId());
 	}
 }

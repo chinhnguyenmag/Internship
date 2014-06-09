@@ -3,6 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
+
+    <TextView
+        android:id="@+id/dialog_restaurant_detail_tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Name" />
+
+    <ImageView
+        android:id="@+id/dialog_restaurant_detail_iv_logo"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:id="@+id/dialog_restaurant_detail_bt_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="OK" />
 
 </LinearLayout>

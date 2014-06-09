@@ -40,7 +40,7 @@ public class NomalSearchAsyncTask extends
 			jObject.put("longitude", params[2]);
 			jObject.put("name", params[3]);
 			jObject.put("current_city", params[4]);
-			
+
 			StringEntity stringEntity = new StringEntity(jObject.toString(),
 					"UTF-8");
 			response = new Gson().fromJson(Server.getJSON(Server.requestPost(
@@ -80,6 +80,9 @@ public class NomalSearchAsyncTask extends
 		super.onPostExecute(result);
 		NomalSearchListener listener = mListener.get();
 		if (result != null) {
+			if (Temp.listRestaurantObject != null) {
+				Temp.listRestaurantObject = null;
+			}
 			Temp.listRestaurantObject = result;
 			listener.onNomalSearchListenerComplete();
 

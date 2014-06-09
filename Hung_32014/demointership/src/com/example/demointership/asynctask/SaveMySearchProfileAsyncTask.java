@@ -50,12 +50,12 @@ public class SaveMySearchProfileAsyncTask extends
 			String[] item_type = params[10].split(",");
 			JSONArray item_type_arr = new JSONArray();
 			for (String item : item_type)
-				item_type_arr.put(item);
+				item_type_arr.put(Integer.parseInt(item));
 			jObject.put("item_type", item_type_arr);
 			String[] menu_type = params[11].split(",");
 			JSONArray menu_type_arr = new JSONArray();
 			for (String item : menu_type)
-				menu_type_arr.put(item);
+				menu_type_arr.put(Integer.parseInt(item));
 			jObject.put("menu_type", item_type_arr);
 			jObject.put("keyword", params[12]);
 			jObject.put("server_rating_min", Integer.parseInt(params[13]));

@@ -1,8 +1,9 @@
 package com.example.demointership.activity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Display;
@@ -24,14 +25,16 @@ import com.example.demointership.Util.Constants;
 import com.example.demointership.Util.Temp;
 import com.example.demointership.adapter.ListDialogItemTypeAdapter;
 import com.example.demointership.adapter.ListDialogMenuTypeAdapter;
+import com.example.demointership.asynctask.AdvanceSeachAsyncTask;
 import com.example.demointership.asynctask.SaveMySearchProfileAsyncTask;
+import com.example.demointership.listener.AdvanceSearchListener;
 import com.example.demointership.listener.SaveMySearchProfileListener;
 import com.example.demointership.model.ItemTypeObject;
 import com.example.demointership.model.MenuTypeObject;
 
 @SuppressLint("NewApi")
-public class CreateMySearchActivity extends Activity implements
-		SaveMySearchProfileListener {
+public class CreateMySearchActivity extends BaseActivity implements
+		SaveMySearchProfileListener, AdvanceSearchListener {
 	Spinner mSnMenuType, mSnFoodType;
 	EditText mEtSearch;
 	RangeBar mRbItemPrice, mRbItemRating, mRbServerRating, mRbDistance,
@@ -46,6 +49,7 @@ public class CreateMySearchActivity extends Activity implements
 
 	@Override
 	public void onBackPressed() {
+		setResult(RESULT_OK);
 		finish();
 	}
 
@@ -283,15 +287,6 @@ public class CreateMySearchActivity extends Activity implements
 					}
 				});
 		mRbRestaurantRating.setThumbIndices(0, 12);
-		// GetMenuTypeAsyncTask asyncGetMenu = new GetMenuTypeAsyncTask(this,
-		// this);
-		// SharedPreferences sp = getSharedPreferences(
-		// Constants.KEY_CURRENT_USER_XML, 0);
-		// String access_token = sp.getString("access_token", "");
-		// asyncGetMenu.execute(access_token);
-		// GetItemTypeAsyncTask asyncGetItem = new GetItemTypeAsyncTask(this,
-		// this);
-		// asyncGetItem.execute(access_token);
 	}
 
 	private String ChangeToTextPoint(int i) {
@@ -333,7 +328,7 @@ public class CreateMySearchActivity extends Activity implements
 			showDialogSave();
 			break;
 		case R.id.createmysearch_bt_search:
-
+			searchAdvance();
 			break;
 		case R.id.createmysearch_bt_cancel:
 			finish();
@@ -347,9 +342,71 @@ public class CreateMySearchActivity extends Activity implements
 		}
 	}
 
+	private void searchAdvance() {
+		AdvanceSeachAsyncTask async = new AdvanceSeachAsyncTask(
+				CreateMySearchActivity.this, CreateMySearchActivity.this);
+		SharedPreferences sp = CreateMySearchActivity.this
+				.getSharedPreferences(Constants.KEY_CURRENT_USER_XML, 0);
+		int restaurant_rating_min = mRbRestaurantRating.getLeftIndex() + 1;
+		int restaurant_rating_max = mRbRestaurantRating.getRightIndex() + 1;
+		int item_price_min = mRbItemPrice.getLeftIndex() + 1;
+		int item_price_max = mRbItemPrice.getRightIndex() + 1;
+		int points_offered_min = mRbPointsOffered.getLeftIndex() + 1;
+		int points_offered_max = mRbPointsOffered.getRightIndex() + 1;
+		int item_rating_min = mRbItemRating.getLeftIndex() + 1;
+		int item_rating_max = mRbItemRating.getRightIndex() + 1;
+		int radius = mRbDistance.getRightIndex() + 1;
+		String item_type = "";
+		ItemTypeObject[] listItemType = Temp.listItemType;
+		int sizeItemType = listItemType.length;
+		for (int i = 0; i < sizeItemType - 1; i++) {
+			if (listItemType[i].isCheck()) {
+				item_type += listItemType[i].getId() + ",";
+			}
+		}
+		if (listItemType[sizeItemType - 1].isCheck()) {
+			item_type += listItemType[sizeItemType - 1].getId();
+		} else {
+			if (item_type.length() > 1)
+				item_type = item_type.substring(0, item_type.length() - 2);
+		}
+
+		//
+		String menu_type = "";
+		MenuTypeObject[] listMenuType = Temp.listMenuType;
+		int sizeMenuType = listMenuType.length;
+		for (int i = 0; i < sizeMenuType - 1; i++) {
+			if (listMenuType[i].isCheck()) {
+				menu_type += listMenuType[i].getId() + ",";
+			}
+		}
+		if (listMenuType[sizeMenuType - 1].isCheck()) {
+			menu_type += listMenuType[sizeMenuType - 1].getId();
+		} else {
+			if (menu_type.length() > 1)
+				menu_type = menu_type.substring(0, menu_type.length() - 2);
+		}
+		int server_rating_min = mRbServerRating.getLeftIndex() + 1;
+		int server_rating_max = mRbServerRating.getRightIndex() + 1;
+		String keyword = "" + mEtSearch.getText().toString();
+		String access_token = sp.getString("access_token", "");
+		// async.execute(access_token,
+		// convertToString(restaurant_rating_min),
+		// convertToString(restaurant_rating_max),
+		// convertToString(item_price_min),
+		// convertToString(item_price_max),
+		// convertToString(points_offered_min),
+		// convertToString(points_offered_max),
+		// convertToString(item_rating_min),
+		// convertToString(item_rating_max),
+		// convertToString(radius), item_type, menu_type,
+		// keyword, convertToString(server_rating_min),
+		// convertToString(server_rating_max),
+		// convertToString(0), n);
+	}
+
 	private void showDialogMenuType() {
-		final Dialog dialog = new Dialog(this,
-				R.style.CustomDialogThemeNoTitleFullScreen);
+		final Dialog dialog = new Dialog(this, R.style.CustomDialogThemeNoTitle);
 		dialog.setContentView(R.layout.dialog_choose_type);
 		TextView tvTitle = (TextView) dialog
 				.findViewById(R.id.dialog_choose_tv_title);
@@ -364,17 +421,51 @@ public class CreateMySearchActivity extends Activity implements
 				dialog.dismiss();
 			}
 		});
-		ListDialogMenuTypeAdapter adapter = new ListDialogMenuTypeAdapter(this,
-				R.layout.item_createmysearch, Temp.listMenuType);
+		MenuTypeObject[] list = Temp.listMenuType;
+		final ListDialogMenuTypeAdapter adapter = new ListDialogMenuTypeAdapter(
+				this, R.layout.item_createmysearch, list);
 		ListView lvList = (ListView) dialog
 				.findViewById(R.id.dialog_choose_lv_list);
 		lvList.setAdapter(adapter);
+		Button btSave = (Button) dialog
+				.findViewById(R.id.dialog_choose_bt_save);
+		btSave.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						CreateMySearchActivity.this,
+						R.style.CustomDialogThemeNoTitle);
+				builder.setMessage("Save ?");
+				builder.setPositiveButton("YES",
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								Temp.listMenuType = adapter.getList();
+								dialog.dismiss();
+							}
+						});
+				builder.setNegativeButton("NO",
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dialog.dismiss();
+							}
+						});
+				AlertDialog alert = builder.create();
+				alert.show();
+				// dialog.dismiss();
+			}
+		});
 		dialog.show();
 	}
 
 	private void showDialogFoodType() {
-		final Dialog dialog = new Dialog(this,
-				R.style.CustomDialogThemeNoTitleFullScreen);
+		final Dialog dialog = new Dialog(this, R.style.CustomDialogThemeNoTitle);
 		dialog.setContentView(R.layout.dialog_choose_type);
 		TextView tvTitle = (TextView) dialog
 				.findViewById(R.id.dialog_choose_tv_title);
@@ -382,6 +473,45 @@ public class CreateMySearchActivity extends Activity implements
 				R.string.dialog_choose_tv_title_food_type));
 		ImageButton ibCancel = (ImageButton) dialog
 				.findViewById(R.id.dialog_choose_ib_close);
+		Button btSave = (Button) dialog
+				.findViewById(R.id.dialog_choose_bt_save);
+		ItemTypeObject[] list = Temp.listItemType;
+		final ListDialogItemTypeAdapter adapter = new ListDialogItemTypeAdapter(
+				this, R.layout.item_createmysearch, list);
+		ListView lvList = (ListView) dialog
+				.findViewById(R.id.dialog_choose_lv_list);
+		lvList.setAdapter(adapter);
+		btSave.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						CreateMySearchActivity.this,
+						R.style.CustomDialogThemeNoTitle);
+				builder.setMessage("Save ?");
+				builder.setPositiveButton("YES",
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								Temp.listItemType = adapter.getList();
+								dialog.dismiss();
+							}
+						});
+				builder.setNegativeButton("NO",
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dialog.dismiss();
+							}
+						});
+				AlertDialog alert = builder.create();
+				alert.show();
+			}
+		});
 		ibCancel.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -389,11 +519,7 @@ public class CreateMySearchActivity extends Activity implements
 				dialog.dismiss();
 			}
 		});
-		ListDialogItemTypeAdapter adapter = new ListDialogItemTypeAdapter(this,
-				R.layout.item_createmysearch, Temp.listItemType);
-		ListView lvList = (ListView) dialog
-				.findViewById(R.id.dialog_choose_lv_list);
-		lvList.setAdapter(adapter);
+
 		dialog.show();
 	}
 
@@ -504,14 +630,34 @@ public class CreateMySearchActivity extends Activity implements
 		Toast.makeText(this, string, Toast.LENGTH_SHORT).show();
 	}
 
+	/**
+	 * RESULT_CANCELED Save complete, finish this with resultCode =
+	 * RESULT_CANCELED
+	 * 
+	 */
 	@Override
 	public void onSaveMySearchProfileListenerComplete() {
-		showToast("Save");
+		showToastMessage("save");
+		setResult(RESULT_CANCELED);
 		finish();
 	}
 
 	@Override
 	public void onSaveMySearchProfileListenerFailed() {
+
+	}
+
+	/**
+	 * RESULT_OK Search complete, resultCode = RESULT_OK
+	 */
+	@Override
+	public void onAdvanceSearchListenerComplete() {
+		setResult(RESULT_OK);
+		finish();
+	}
+
+	@Override
+	public void onAdvanceSearchListenerFailed() {
 
 	}
 

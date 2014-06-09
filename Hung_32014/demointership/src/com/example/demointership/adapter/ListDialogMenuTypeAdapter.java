@@ -7,12 +7,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.demointership.R;
-import com.example.demointership.model.ItemTypeObject;
 import com.example.demointership.model.MenuTypeObject;
 
 public class ListDialogMenuTypeAdapter extends ArrayAdapter<MenuTypeObject> {
@@ -26,6 +25,16 @@ public class ListDialogMenuTypeAdapter extends ArrayAdapter<MenuTypeObject> {
 		mInflater = LayoutInflater.from(context);
 		this.mContext = context;
 		this.mList = list;
+	}
+
+	@Override
+	public MenuTypeObject getItem(int position) {
+		return mList[position];
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return position;
 	}
 
 	@Override
@@ -47,12 +56,16 @@ public class ListDialogMenuTypeAdapter extends ArrayAdapter<MenuTypeObject> {
 						public void onCheckedChanged(CompoundButton buttonView,
 								boolean isChecked) {
 							if (isChecked) {
-								Toast.makeText(mContext,
-										"" + getItem(position).getName(),
-										Toast.LENGTH_SHORT).show();
 								getItem(position).setCheck(true);
-							} else {
+								Toast.makeText(mContext,
+										"" + getItem(position).isCheck(),
+										Toast.LENGTH_SHORT).show();
 
+							} else {
+								getItem(position).setCheck(false);
+								Toast.makeText(mContext,
+										"" + getItem(position).isCheck(),
+										Toast.LENGTH_SHORT).show();
 							}
 						}
 					});
@@ -64,7 +77,9 @@ public class ListDialogMenuTypeAdapter extends ArrayAdapter<MenuTypeObject> {
 		holder.tvName.setText("" + getItem(position).getName());
 		return convertView;
 	}
-
+	public MenuTypeObject[] getList() {
+		return this.mList;
+	}
 	private class Holder {
 		public TextView tvName;
 		public CheckBox cbChoose;

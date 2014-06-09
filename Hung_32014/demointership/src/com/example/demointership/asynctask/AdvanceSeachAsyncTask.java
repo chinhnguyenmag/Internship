@@ -53,7 +53,7 @@ public class AdvanceSeachAsyncTask extends AsyncTask<String, Void, Boolean> {
 			String[] item_type = params[8].split(",");
 			JSONArray item_type_arr = new JSONArray();
 			for (String item : item_type) {
-				item_type_arr.put(item);
+				item_type_arr.put(Integer.parseInt(item));
 			}
 			jObject.put("item_type", item_type_arr);
 			String[] menu_type = params[9].split(",");

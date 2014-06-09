@@ -14,7 +14,7 @@ import android.widget.Toast;
 import com.example.demointership.R;
 import com.example.demointership.model.ItemTypeObject;
 
-public class ListDialogItemTypeAdapter extends ArrayAdapter<ItemTypeObject>{
+public class ListDialogItemTypeAdapter extends ArrayAdapter<ItemTypeObject> {
 	Activity mContext;
 	ItemTypeObject[] mList;
 	LayoutInflater mInflater;
@@ -62,6 +62,10 @@ public class ListDialogItemTypeAdapter extends ArrayAdapter<ItemTypeObject>{
 		holder.tvID.setText("" + getItem(position).getId());
 		holder.tvName.setText("" + getItem(position).getName());
 		return convertView;
+	}
+
+	public ItemTypeObject[] getList() {
+		return this.mList;
 	}
 
 	private class Holder {

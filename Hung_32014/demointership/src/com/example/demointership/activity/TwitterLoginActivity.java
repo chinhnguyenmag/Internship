@@ -3,7 +3,6 @@ package com.example.demointership.activity;
 
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,7 +14,7 @@ import android.webkit.WebViewClient;
 import com.example.demointership.R;
 import com.example.demointership.Util.Constants;
 
-public class TwitterLoginActivity extends Activity {
+public class TwitterLoginActivity extends BaseActivity {
 
 	
 
