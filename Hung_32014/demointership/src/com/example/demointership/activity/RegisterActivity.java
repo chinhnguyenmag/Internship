@@ -26,7 +26,7 @@ import com.example.demointership.R;
 import com.example.demointership.asynctask.RegisterNomalAsyncTask;
 import com.example.demointership.listener.RegisterNomalListener;
 
-public class RegisterActivity extends Activity implements RegisterNomalListener {
+public class RegisterActivity extends BaseActivity implements RegisterNomalListener {
 	EditText mEtFirstName, mEtLastName, mEtZipcode, mEtEmail, mEtUsername,
 			mEtPassword, mEtConfirmPassword;
 	Button mBtSubmit;
@@ -79,7 +79,7 @@ public class RegisterActivity extends Activity implements RegisterNomalListener 
 			String password = mEtPassword.getText().toString();
 			String confirmpassword = mEtConfirmPassword.getText().toString();
 
-			if (check(firstname, lastname, zipcode, email, username, password,
+			if (!check(firstname, lastname, zipcode, email, username, password,
 					confirmpassword)) {
 				showToast("Please fill all value !");
 			} else {

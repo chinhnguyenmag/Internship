@@ -78,11 +78,26 @@ public class MapActivity extends FragmentActivity implements
 	Location mCurrentLocation;
 	final int MYSEARCH = 1;
 
+	// LruCache<String, Bitmap> mMemoryCache;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
+		// final int maxMemory = (int) (Runtime.getRuntime().maxMemory() /
+		// 1024);
 
+		// Use 1/8th of the available memory for this memory cache.
+		// final int cacheSize = maxMemory / 8;
+
+		// mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+		// @Override
+		// protected int sizeOf(String key, Bitmap bitmap) {
+		// // The cache size will be measured in kilobytes rather than
+		// // number of items.
+		// return bitmap.getByteCount() / 1024;
+		// }
+		// };
 		mSpLogin = getSharedPreferences(Constants.KEY_CURRENT_USER_XML, 0);
 		mBtMap = (Button) findViewById(R.id.map_bt_map);
 		mBtList = (Button) findViewById(R.id.map_bt_list);
@@ -176,7 +191,18 @@ public class MapActivity extends FragmentActivity implements
 		});
 		mHlvItem.setOnItemClickListener(this);
 		mLvListItem.setOnItemClickListener(this);
+
 	}
+
+	// public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+	// if (getBitmapFromMemCache(key) == null) {
+	// mMemoryCache.put(key, bitmap);
+	// }
+	// }
+	//
+	// public Bitmap getBitmapFromMemCache(String key) {
+	// return mMemoryCache.get(key);
+	// }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -218,6 +244,9 @@ public class MapActivity extends FragmentActivity implements
 
 	@Override
 	protected void onDestroy() {
+		mLvListItem.setAdapter(null);
+		mHlvItem.setAdapter(null);
+		mRestaurants = null;
 		super.onDestroy();
 	}
 
@@ -291,6 +320,7 @@ public class MapActivity extends FragmentActivity implements
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		mCurrentLocation = mLocationClient.getLastLocation();
+		Temp.currentLocation = mCurrentLocation;
 		LatLng currenlocation = new LatLng(mCurrentLocation.getLatitude(),
 				mCurrentLocation.getLongitude());
 
@@ -366,7 +396,7 @@ public class MapActivity extends FragmentActivity implements
 		HorizontalAdapter horizontaladapter = new HorizontalAdapter(this,
 				mRestaurants);
 		mHlvItem.setAdapter(horizontaladapter);
-
+		
 		NomalListMapAdapter listadapter = new NomalListMapAdapter(this,
 				R.layout.item_list, mRestaurants);
 		mLvListItem.setAdapter(listadapter);
@@ -471,11 +501,12 @@ public class MapActivity extends FragmentActivity implements
 				.findViewById(R.id.dialog_restaurant_detail_tv_name);
 		ImageView ivLogo = (ImageView) dialog
 				.findViewById(R.id.dialog_restaurant_detail_iv_logo);
-		Button btCancel = (Button)dialog.findViewById(R.id.dialog_restaurant_detail_bt_cancel);
+		Button btCancel = (Button) dialog
+				.findViewById(R.id.dialog_restaurant_detail_bt_cancel);
 		tvName.setText("" + mRestaurants[position].getName());
 		ivLogo.setImageBitmap(mRestaurants[position].getImagelogo());
 		btCancel.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();

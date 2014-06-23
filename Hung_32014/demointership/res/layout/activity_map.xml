@@ -59,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical"
-            android:visibility="visible" >
+            android:visibility="gone" >
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -98,8 +98,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:visibility="gone" >
-
+            android:visibility="visible" >
+			
             <ListView
                 android:id="@+id/map_lv_listitem"
                 android:layout_width="match_parent"

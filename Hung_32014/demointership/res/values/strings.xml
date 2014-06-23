@@ -56,6 +56,8 @@
 	<string name="createmysearch_bt_save">Save MySearch Profile</string>
 	<string name="createmysearch_bt_search">Search</string>
 	<string name="createmysearch_bt_cancel">Cancel</string>
+	<string name="createmysearch_bt_choose_type_food">Genre (Food Type)</string>
+	<string name="createmysearch_bt_choose_type_menu">Published Menu Types</string>
 	<string name="dialog_createmysearch_tv_title">MySearch Profile Name</string>
 	<string name="dialog_createmysearch_et_name_hint">MySearch Name</string>
 	<string name="dialog_createmysearch_bt_save">Save</string>

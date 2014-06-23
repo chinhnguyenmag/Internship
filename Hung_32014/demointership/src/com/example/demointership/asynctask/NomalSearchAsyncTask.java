@@ -1,15 +1,13 @@
 package com.example.demointership.asynctask;
 
 import java.lang.ref.WeakReference;
-import java.net.URL;
 
 import org.apache.http.entity.StringEntity;
 import org.json.JSONObject;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.os.AsyncTask;
 
 import com.example.demointership.Util.Server;
@@ -46,30 +44,40 @@ public class NomalSearchAsyncTask extends
 			response = new Gson().fromJson(Server.getJSON(Server.requestPost(
 					ServerURL.URL + ServerURL.getKeyNormalsearch(),
 					stringEntity)), RestaurantsObject[].class);
+			Location currentLocation = new Location("current");
+			currentLocation.setLatitude(Float.parseFloat(params[1]));
+			currentLocation.setLongitude(Float.parseFloat(params[2]));
 			for (RestaurantsObject item : response) {
-				Bitmap image = null;
-				if (item.getType() != null) {
-					URL imageURL = new URL(ServerURL.URL + item.getLogo());
-					image = BitmapFactory.decodeStream(imageURL
-							.openConnection().getInputStream());
-				} else {
-					// if (item.getPhotos() == null) {
-					URL imageURL = new URL(item.getLogo());
-					image = BitmapFactory.decodeStream(imageURL
-							.openConnection().getInputStream());
-					// } else {
-					//
-					// String url =
-					// "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="
-					// + item.getPhotos().get(0).photo_reference +
-					// "&sensor=false&key="+ item.getPhotos().get(0).api_key;
-					// URL imageURL = new URL(url);
-					// image = BitmapFactory.decodeStream(imageURL
-					// .openConnection().getInputStream());
-					// }
+				if (!item.getType().equals("mymenu")) {
+					Location itemLocation = new Location("item");
+					item.setDistance(currentLocation.distanceTo(itemLocation));
 				}
-				item.setImagelogo(image);
 			}
+			// for (RestaurantsObject item : response) {
+			// Bitmap image = null;
+			// if (item.getType() != null) {
+			// URL imageURL = new URL(ServerURL.URL + item.getLogo());
+			// image = BitmapFactory.decodeStream(imageURL
+			// .openConnection().getInputStream());
+			// } else {
+			// // if (item.getPhotos() == null) {
+			// URL imageURL = new URL(item.getLogo());
+			// image = BitmapFactory.decodeStream(imageURL
+			// .openConnection().getInputStream());
+			// // } else {
+			// //
+			// // String url =
+			// //
+			// "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="
+			// // + item.getPhotos().get(0).photo_reference +
+			// // "&sensor=false&key="+ item.getPhotos().get(0).api_key;
+			// // URL imageURL = new URL(url);
+			// // image = BitmapFactory.decodeStream(imageURL
+			// // .openConnection().getInputStream());
+			// // }
+			// }
+			// item.setImagelogo(image);
+			// }
 		} catch (Exception e) {
 		}
 		return response;

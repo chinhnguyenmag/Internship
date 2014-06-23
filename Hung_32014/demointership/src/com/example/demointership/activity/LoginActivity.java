@@ -12,7 +12,6 @@ import twitter4j.auth.RequestToken;
 import twitter4j.conf.ConfigurationBuilder;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -49,7 +48,7 @@ import com.google.android.gms.plus.PlusClient;
 import com.google.android.gms.plus.model.people.Person;
 
 @SuppressLint("NewApi")
-public class LoginActivity extends Activity
+public class LoginActivity extends BaseActivity
 		implements
 		ConnectionCallbacks,
 		OnConnectionFailedListener,

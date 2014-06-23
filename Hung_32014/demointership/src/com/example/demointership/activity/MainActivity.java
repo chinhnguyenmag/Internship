@@ -1,14 +1,13 @@
 package com.example.demointership.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
 import com.example.demointership.R;
 
-public class MainActivity extends Activity {
-	int i = 1000;
+public class MainActivity extends BaseActivity {
+	final int TIME_DELAY = 1000; // miliseconds
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -22,16 +21,15 @@ public class MainActivity extends Activity {
 				startActivity(new Intent(MainActivity.this, LoginActivity.class));
 				finish();
 			}
-		}, i);
+		}, TIME_DELAY);
 
 	}
-
+	
 	@Override
 	protected void onDestroy() {
-
+		
 		super.onDestroy();
 	}
-
 	@Override
 	protected void onPause() {
 

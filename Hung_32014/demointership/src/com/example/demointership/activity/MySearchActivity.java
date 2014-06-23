@@ -110,18 +110,18 @@ public class MySearchActivity extends BaseActivity implements
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == CREATE_MY_SEARCH) {
 			/**
-			 * RESULT_OK create AdvanceSearchProfile success or not.
+			 * RESULT_CANCELED create AdvanceSearchProfile success or not.
 			 */
-			if (resultCode == RESULT_OK) {
+			if (resultCode == RESULT_CANCELED) {
 				SharedPreferences sp = getSharedPreferences(
 						Constants.KEY_CURRENT_USER_XML, 0);
 				String access_token = sp.getString("access_token", "");
 				GetAllSearchProfileAsyncTask async = new GetAllSearchProfileAsyncTask(
 						MySearchActivity.this, MySearchActivity.this);
 				async.execute(access_token);
-			} else if (resultCode == RESULT_CANCELED) {
+			} else if (resultCode == RESULT_OK) {
 				/**
-				 * RESULT_CANCELED not create AdvanceSearch. Just search. return
+				 * RESULT_OK not create AdvanceSearch. Just search. return
 				 * RESULT_OK to MapActivity
 				 */
 				setResult(RESULT_OK);

@@ -49,7 +49,7 @@ public class CreateMySearchActivity extends BaseActivity implements
 
 	@Override
 	public void onBackPressed() {
-		setResult(RESULT_OK);
+		setResult(RESULT_CANCELED);
 		finish();
 	}
 
@@ -331,6 +331,7 @@ public class CreateMySearchActivity extends BaseActivity implements
 			searchAdvance();
 			break;
 		case R.id.createmysearch_bt_cancel:
+			setResult(RESULT_CANCELED);
 			finish();
 			break;
 		case R.id.createmysearch_bt_food_type:
@@ -347,6 +348,7 @@ public class CreateMySearchActivity extends BaseActivity implements
 				CreateMySearchActivity.this, CreateMySearchActivity.this);
 		SharedPreferences sp = CreateMySearchActivity.this
 				.getSharedPreferences(Constants.KEY_CURRENT_USER_XML, 0);
+
 		int restaurant_rating_min = mRbRestaurantRating.getLeftIndex() + 1;
 		int restaurant_rating_max = mRbRestaurantRating.getRightIndex() + 1;
 		int item_price_min = mRbItemPrice.getLeftIndex() + 1;
@@ -390,19 +392,20 @@ public class CreateMySearchActivity extends BaseActivity implements
 		int server_rating_max = mRbServerRating.getRightIndex() + 1;
 		String keyword = "" + mEtSearch.getText().toString();
 		String access_token = sp.getString("access_token", "");
-		// async.execute(access_token,
-		// convertToString(restaurant_rating_min),
-		// convertToString(restaurant_rating_max),
-		// convertToString(item_price_min),
-		// convertToString(item_price_max),
-		// convertToString(points_offered_min),
-		// convertToString(points_offered_max),
-		// convertToString(item_rating_min),
-		// convertToString(item_rating_max),
-		// convertToString(radius), item_type, menu_type,
-		// keyword, convertToString(server_rating_min),
-		// convertToString(server_rating_max),
-		// convertToString(0), n);
+		async.execute(access_token,
+				convertToString(Temp.currentLocation.getLatitude()),
+				convertToString(Temp.currentLocation.getLongitude()),
+				convertToString(restaurant_rating_min),
+				convertToString(restaurant_rating_max),
+				convertToString(item_price_min),
+				convertToString(item_price_max),
+				convertToString(points_offered_min),
+				convertToString(points_offered_max),
+				convertToString(item_rating_min),
+				convertToString(item_rating_max), convertToString(radius),
+				item_type, menu_type, keyword,
+				convertToString(server_rating_min),
+				convertToString(server_rating_max));
 	}
 
 	private void showDialogMenuType() {
@@ -458,7 +461,9 @@ public class CreateMySearchActivity extends BaseActivity implements
 						});
 				AlertDialog alert = builder.create();
 				alert.show();
-				// dialog.dismiss();
+				if (!alert.isShowing()) {
+					dialog.dismiss();
+				}
 			}
 		});
 		dialog.show();
@@ -510,6 +515,9 @@ public class CreateMySearchActivity extends BaseActivity implements
 						});
 				AlertDialog alert = builder.create();
 				alert.show();
+				if (!alert.isShowing()) {
+					dialog.dismiss();
+				}
 			}
 		});
 		ibCancel.setOnClickListener(new OnClickListener() {
@@ -620,6 +628,10 @@ public class CreateMySearchActivity extends BaseActivity implements
 
 		});
 		dialog.show();
+	}
+
+	private String convertToString(double n) {
+		return String.valueOf(n);
 	}
 
 	private String convertToString(int n) {

@@ -1,7 +1,5 @@
 package com.example.demointership.activity;
 
-
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
@@ -15,8 +13,6 @@ import com.example.demointership.R;
 import com.example.demointership.Util.Constants;
 
 public class TwitterLoginActivity extends BaseActivity {
-
-	
 
 	@SuppressLint("SetJavaScriptEnabled")
 	protected void onCreate(Bundle bundle) {
@@ -42,8 +38,10 @@ public class TwitterLoginActivity extends BaseActivity {
 								.getQueryParameter("oauth_verifier");
 
 						Intent intent = getIntent();
-						intent.putExtra(Constants.IEXTRA_OAUTH_TOKEN, oauthToken);
-						intent.putExtra(Constants.IEXTRA_OAUTH_VERIFIER, oauthVerifier);
+						intent.putExtra(Constants.IEXTRA_OAUTH_TOKEN,
+								oauthToken);
+						intent.putExtra(Constants.IEXTRA_OAUTH_VERIFIER,
+								oauthVerifier);
 						setResult(RESULT_OK, intent);
 						finish();
 					}

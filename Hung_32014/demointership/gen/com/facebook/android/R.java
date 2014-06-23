@@ -68,7 +68,7 @@ public final class R {
 		public static final int com_facebook_list_section_header_background = 0x7f020065;
 		public static final int com_facebook_loginbutton_silver = 0x7f020066;
 		public static final int com_facebook_logo = 0x7f020067;
-		public static final int com_facebook_picker_default_separator_color = 0x7f0201be;
+		public static final int com_facebook_picker_default_separator_color = 0x7f0201c0;
 		public static final int com_facebook_picker_item_background = 0x7f020068;
 		public static final int com_facebook_picker_list_focused = 0x7f020069;
 		public static final int com_facebook_picker_list_longpressed = 0x7f02006a;
@@ -129,31 +129,31 @@ public final class R {
 		public static final int com_facebook_usersettingsfragment = 0x7f030016;
 	}
 	public static final class string {
-		public static final int com_facebook_choose_friends = 0x7f04002a;
-		public static final int com_facebook_dialogloginactivity_ok_button = 0x7f04001b;
-		public static final int com_facebook_internet_permission_error_message = 0x7f04002e;
-		public static final int com_facebook_internet_permission_error_title = 0x7f04002d;
-		public static final int com_facebook_loading = 0x7f04002c;
-		public static final int com_facebook_loginview_cancel_action = 0x7f040021;
-		public static final int com_facebook_loginview_log_in_button = 0x7f04001d;
-		public static final int com_facebook_loginview_log_out_action = 0x7f040020;
-		public static final int com_facebook_loginview_log_out_button = 0x7f04001c;
-		public static final int com_facebook_loginview_logged_in_as = 0x7f04001e;
-		public static final int com_facebook_loginview_logged_in_using_facebook = 0x7f04001f;
-		public static final int com_facebook_logo_content_description = 0x7f040022;
-		public static final int com_facebook_nearby = 0x7f04002b;
-		public static final int com_facebook_picker_done_button_text = 0x7f040029;
-		public static final int com_facebook_placepicker_subtitle_catetory_only_format = 0x7f040027;
-		public static final int com_facebook_placepicker_subtitle_format = 0x7f040026;
-		public static final int com_facebook_placepicker_subtitle_were_here_only_format = 0x7f040028;
-		public static final int com_facebook_requesterror_password_changed = 0x7f040031;
-		public static final int com_facebook_requesterror_permissions = 0x7f040033;
-		public static final int com_facebook_requesterror_reconnect = 0x7f040032;
-		public static final int com_facebook_requesterror_relogin = 0x7f040030;
-		public static final int com_facebook_requesterror_web_login = 0x7f04002f;
-		public static final int com_facebook_usersettingsfragment_log_in_button = 0x7f040023;
-		public static final int com_facebook_usersettingsfragment_logged_in = 0x7f040024;
-		public static final int com_facebook_usersettingsfragment_not_logged_in = 0x7f040025;
+		public static final int com_facebook_choose_friends = 0x7f04002b;
+		public static final int com_facebook_dialogloginactivity_ok_button = 0x7f04001c;
+		public static final int com_facebook_internet_permission_error_message = 0x7f04002f;
+		public static final int com_facebook_internet_permission_error_title = 0x7f04002e;
+		public static final int com_facebook_loading = 0x7f04002d;
+		public static final int com_facebook_loginview_cancel_action = 0x7f040022;
+		public static final int com_facebook_loginview_log_in_button = 0x7f04001e;
+		public static final int com_facebook_loginview_log_out_action = 0x7f040021;
+		public static final int com_facebook_loginview_log_out_button = 0x7f04001d;
+		public static final int com_facebook_loginview_logged_in_as = 0x7f04001f;
+		public static final int com_facebook_loginview_logged_in_using_facebook = 0x7f040020;
+		public static final int com_facebook_logo_content_description = 0x7f040023;
+		public static final int com_facebook_nearby = 0x7f04002c;
+		public static final int com_facebook_picker_done_button_text = 0x7f04002a;
+		public static final int com_facebook_placepicker_subtitle_catetory_only_format = 0x7f040028;
+		public static final int com_facebook_placepicker_subtitle_format = 0x7f040027;
+		public static final int com_facebook_placepicker_subtitle_were_here_only_format = 0x7f040029;
+		public static final int com_facebook_requesterror_password_changed = 0x7f040032;
+		public static final int com_facebook_requesterror_permissions = 0x7f040034;
+		public static final int com_facebook_requesterror_reconnect = 0x7f040033;
+		public static final int com_facebook_requesterror_relogin = 0x7f040031;
+		public static final int com_facebook_requesterror_web_login = 0x7f040030;
+		public static final int com_facebook_usersettingsfragment_log_in_button = 0x7f040024;
+		public static final int com_facebook_usersettingsfragment_logged_in = 0x7f040025;
+		public static final int com_facebook_usersettingsfragment_not_logged_in = 0x7f040026;
 	}
 	public static final class style {
 		public static final int com_facebook_loginview_default_style = 0x7f050002;

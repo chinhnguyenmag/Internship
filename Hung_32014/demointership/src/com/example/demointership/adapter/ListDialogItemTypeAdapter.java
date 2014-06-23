@@ -3,18 +3,18 @@ package com.example.demointership.adapter;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.demointership.R;
 import com.example.demointership.model.ItemTypeObject;
 
-public class ListDialogItemTypeAdapter extends ArrayAdapter<ItemTypeObject> {
+public class ListDialogItemTypeAdapter extends ArrayAdapter<ItemTypeObject>
+		implements OnClickListener {
 	Activity mContext;
 	ItemTypeObject[] mList;
 	LayoutInflater mInflater;
@@ -39,28 +39,15 @@ public class ListDialogItemTypeAdapter extends ArrayAdapter<ItemTypeObject> {
 					.findViewById(R.id.item_createmysearch_name);
 			holder.cbChoose = (CheckBox) convertView
 					.findViewById(R.id.item_createmysearch_check);
-			holder.cbChoose
-					.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-						@Override
-						public void onCheckedChanged(CompoundButton buttonView,
-								boolean isChecked) {
-							if (isChecked) {
-								Toast.makeText(mContext,
-										"" + getItem(position).getName(),
-										Toast.LENGTH_SHORT).show();
-								getItem(position).setCheck(true);
-							} else {
-
-							}
-						}
-					});
+			holder.cbChoose.setOnClickListener(this);
 			convertView.setTag(holder);
 		} else {
 			holder = (Holder) convertView.getTag();
 		}
 		holder.tvID.setText("" + getItem(position).getId());
 		holder.tvName.setText("" + getItem(position).getName());
+		holder.cbChoose.setTag(position);
+		holder.cbChoose.setChecked(mList[position].isCheck());
 		return convertView;
 	}
 
@@ -72,5 +59,12 @@ public class ListDialogItemTypeAdapter extends ArrayAdapter<ItemTypeObject> {
 		public TextView tvName;
 		public CheckBox cbChoose;
 		public TextView tvID;
+	}
+
+	@Override
+	public void onClick(View view) {
+		Integer index = (Integer) view.getTag();
+		boolean state = mList[index].isCheck();
+		mList[index].setCheck(!state);
 	}
 }

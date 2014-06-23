@@ -40,7 +40,7 @@ public class RegisterNomalAsyncTask extends AsyncTask<String, Void, Boolean> {
 			jObject.put("password", params[2]);
 			jObject.put("first_name", params[3]);
 			jObject.put("last_name", params[4]);
-			jObject.put("zipcode", params[5]);
+			jObject.put("zip", Integer.parseInt(params[5]));
 			StringEntity stringEntity = new StringEntity(jObject.toString(),
 					"UTF-8");
 			UserProfileObject response = new Gson().fromJson(Server
